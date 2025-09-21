@@ -1,0 +1,21 @@
+{
+    "author": "Keva1z",
+    "dependencies": {
+        "dotenv": "^17.2.2",
+        "telegraf": "^4.16.3"
+    },
+    "description": "NeforLove bot for @NeforLove_robot",
+    "devDependencies": {
+        "@types/node": "^24.5.2",
+        "typescript": "^5.9.2"
+    },
+    "license": "MIT",
+    "main": "dist/index.js",
+    "name": "neforlove-ts",
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/bot/main.js"
+    },
+    "type": "module",
+    "version": "0.1.0"
+}
