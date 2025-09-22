@@ -2,6 +2,7 @@ import { type Context } from 'telegraf';
 import type { Update } from "telegraf/types";
 
 export enum State {
+    agreePolicy = "agreePolicy",
     waitingVideoNote = "waitingVideoNote",
 }
 

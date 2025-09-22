@@ -12,9 +12,9 @@ import * as registration from './routers/registration.js';
 const bot = new Telegraf<BaseContext>(token);
 bot.use(session({defaultSession: () => resetSession()}))
 bot.use(async (ctx, next) => {
-  console.time(`[BOT] Handled update ${ctx.update.update_id} in`)
+  console.time(`[BOT] Handled update ${ctx.update.update_id} from [${ctx.from?.first_name}](${ctx.from?.id}) in`)
   await next();
-  console.timeEnd(`[BOT] Handled update ${ctx.update.update_id} in`)
+  console.timeEnd(`[BOT] Handled update ${ctx.update.update_id} from [${ctx.from?.first_name}](${ctx.from?.id}) in`)
 });
 
 bot.use(start.router, registration.router)
