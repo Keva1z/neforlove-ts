@@ -1,15 +1,15 @@
 
 import { Telegraf, session} from 'telegraf';
-import { token } from "./config.js"
-import { BaseContext, resetSession } from "../utils/fsm.js"
+import env from "@/env"
+import { BaseContext, resetSession } from "@/utils/fsm"
 
 // All routers
-import * as start from './routers/start.js';
-import * as registration from './routers/registration.js';
+import * as start from './routers/start';
+import * as registration from './routers/registration';
 
 
 // Define bot and session
-const bot = new Telegraf<BaseContext>(token);
+const bot = new Telegraf<BaseContext>(env.TOKEN);
 bot.use(session({defaultSession: () => resetSession()}))
 bot.use(async (ctx, next) => {
   console.time(`[BOT] Handled update ${ctx.update.update_id} from [${ctx.from?.first_name}](${ctx.from?.id}) in`)

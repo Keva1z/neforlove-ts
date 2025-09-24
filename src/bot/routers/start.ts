@@ -1,8 +1,9 @@
 import { Composer } from "telegraf";
 import { inlineKeyboard, button } from "telegraf/markup"
-import { BaseContext, State } from "../../utils/fsm.js"
-import { generate_phrase } from "../../utils/generate.js"
-import { Texts } from "../../constants/texts.js";
+
+import { BaseContext, State } from "@/utils/fsm"
+import { generate_phrase } from "@/utils/generate"
+import { Texts } from "@/constants/texts";
 
 const router = new Composer<BaseContext>();
 

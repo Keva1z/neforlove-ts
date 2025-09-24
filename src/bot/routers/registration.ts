@@ -3,8 +3,8 @@ import { message } from "telegraf/filters"
 import { fmt, mention } from "telegraf/format"
 import { inlineKeyboard, button } from "telegraf/markup"
 
-import { BaseContext, State } from "../../utils/fsm.js"
-import { videonote_chat } from "../config.js"
+import { BaseContext, State } from "@/utils/fsm"
+import env from "@/env"
 
 const router = new Composer<BaseContext>();
 
@@ -28,8 +28,8 @@ router.on(message("video_note"), async (ctx, next) => {
     // TODO: Set user status to 'ON VERIFICATION' in ORM
 
     // Send videonote with message
-    await ctx.copyMessage(videonote_chat)
-    await ctx.telegram.sendMessage(videonote_chat, text, {parse_mode: "MarkdownV2", reply_markup: approveKeyboard(uid)})
+    await ctx.copyMessage(env.VIDEONOTE_CHAT)
+    await ctx.telegram.sendMessage(env.VIDEONOTE_CHAT, text, {parse_mode: "MarkdownV2", reply_markup: approveKeyboard(uid)})
 
     await ctx.reply("Ваш кружок был отправлен на модерацию!\nПожалуйста, ожидайте решения.")
 

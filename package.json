@@ -1,20 +1,30 @@
 {
     "author": "Keva1z",
     "dependencies": {
+        "@types/node": "^24.5.2",
         "dotenv": "^17.2.2",
+        "dotenv-expand": "^12.0.3",
+        "drizzle-orm": "^0.44.5",
+        "drizzle-zod": "^0.8.3",
+        "pg": "^8.16.3",
+        "postgres": "^3.4.7",
         "telegraf": "^4.16.3"
     },
     "description": "NeforLove bot for @NeforLove_robot",
     "devDependencies": {
-        "@types/node": "^24.5.2",
+        "@types/pg": "^8.15.5",
+        "cross-env": "^10.0.0",
+        "drizzle-kit": "^0.31.4",
+        "tsc-alias": "^1.8.16",
+        "tsx": "^4.20.5",
         "typescript": "^5.9.2"
     },
     "license": "MIT",
-    "main": "dist/index.js",
+    "main": "index.js",
     "name": "neforlove-ts",
     "scripts": {
-        "build": "tsc",
-        "start": "node dist/bot/main.js"
+        "build": "tsc && tsc-alias",
+        "dev:bot": "tsx src/bot/main.ts"
     },
     "type": "module",
     "version": "0.1.0"

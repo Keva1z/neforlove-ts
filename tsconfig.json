@@ -1,9 +1,19 @@
 {
     "compilerOptions": {
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
+        "esModuleInterop": true,
+        "module": "esnext",
+        "moduleResolution": "node",
         "outDir": "./dist",
-        "rootDir": "./src",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ],
+            "$/*": [
+                "./"
+            ]
+        },
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
         "strictNullChecks": true,
         "target": "esnext",
         "types": [
@@ -12,7 +22,14 @@
             "telegraf"
         ]
     },
+    "exclude": [
+        "node_modules",
+    ],
     "include": [
-        "src"
-    ]
+        "src/**/*.ts"
+    ],
+    "tsc-alias": {
+        "resolveFullPaths": true,
+        "verbose": false
+    }
 }
