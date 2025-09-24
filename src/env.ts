@@ -1,21 +1,3 @@
-// import { config } from "dotenv";
-// import { expand } from "dotenv-expand";
-
-// expand(config({debug: false}))
-
-// const token = process.env.BOT_TOKEN!
-// const videonote_chat = Number(process.env.VIDEONOTE_CHAT!)
-
-// const DB_MIGRATING = process.env.DB_MIGRATING ? process.env.DB_MIGRATING === "true" : false
-// const DB_SEEDING = process.env.DB_SEEDING ? process.env.DB_SEEDING === "true" : false
-// const DATABASE_URL = process.env.DATABASE_URL
-
-// if (!token) {throw new Error("Token must be provided!")}
-// if (!videonote_chat) {throw new Error("Videonote chat must be provided!")}
-// if (DATABASE_URL) {throw new Error("Database url must be provided!")}
-
-// export { token, videonote_chat, DB_MIGRATING, DB_SEEDING, DATABASE_URL}
-
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 
