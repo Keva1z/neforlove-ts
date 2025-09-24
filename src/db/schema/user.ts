@@ -2,63 +2,125 @@ import { pgTable,
     bigint,
     serial,
     varchar,
-    boolean
+    timestamp,
+    boolean,
+    integer
 } from "drizzle-orm/pg-core"; 
+import { relations } from "drizzle-orm";
+import { InferInsertModel } from "drizzle-orm";
 
-import { sexEnum, roleEnum } from "./enums"
+import { sexEnum, roleEnum, subscriptionEnum } from "./enums"
 
 const user = pgTable("users", {
-    id: serial("id").primaryKey(),
-    userid: bigint("userid", {mode: "number"}).notNull().unique(),
+    id: serial().primaryKey(),
+    userid: bigint({mode: "number"}).notNull().unique(),
 
     sex: sexEnum().default("Unknown").notNull(),
     role: roleEnum().default("User").notNull(),
 
+    // Videonote verification fields
     verified: boolean().default(false).notNull(),
 
+    // Subscription fields
+    subscription: subscriptionEnum().default("Free").notNull(),
+    subscriptionEnd: timestamp({mode: "date", withTimezone: true}),
+
+    // Ban fields
     banned: boolean().default(false).notNull(),
-    banMessage: varchar("ban_message",{length: 128})
+    banMessage: varchar({length: 128})
 });
 
-// TODO: Create other schemas for user
-// Sub-Tables: Settings, Statistics, Referral, Subscription, Verification
+const verification = pgTable("verifications", {
+    userid: bigint({mode: "number"})
+            .notNull()
+            .unique()
+            .references(() => user.userid),
+    verified_at: timestamp({mode: "date", withTimezone: true}),
+    videonote: varchar({length: 256}),
+    phrase: varchar({length: 32}).notNull(),
+    verified_by_id: bigint({mode: "number"})
+            .unique()
+            .references(() => user.userid)
+})
 
-// Settings fields:
-// userid BIGINT
-// searchID INT
-// searchSex sexEnum
-// ageFrom INT
-// ageTo INT
-// city STR
-// distance INT
-// by_distance BOOLEAN
+const referral = pgTable("referrals", {
+    userid: bigint({mode: "number"})
+            .notNull()
+            .unique()
+            .references(() => user.userid),
+    code: varchar({length: 32}).notNull().unique(),
+    referrer_id: bigint({mode: "number"})
+            .unique()
+            .references(() => user.userid),
+    verified: integer().default(0).notNull(),
+    total: integer().default(0).notNull()
+})
 
-// Statistics fields:
-// userid BIGINT
-// likesIn INT
-// likesOut INT
-// dislikesIn INT
-// dislikesOut INT
-// videonotes INT
-// forms INT
+const searchSettings = pgTable("search_settings", {
+    userid: bigint({mode: "number"})
+            .notNull()
+            .unique()
+            .references(() => user.userid),
+    searchId: integer().default(0).notNull(),
+    searchSex: sexEnum().default("Unknown").notNull(),
+    ageFrom: integer().default(16).notNull(),
+    ageTo: integer().default(40).notNull(),
+    city: varchar({length: 128}),
+    distance: integer().default(1000).notNull(), // In meters
+    by_distance: boolean().default(false).notNull()
+})
 
-// Referral fields:
-// userid BIGINT
-// code VARCHAR(32)
-// inviter BIGINT - IDK how to name guy that send you invite link
-// verified INT
-// total INT
+const statistics = pgTable("user_statistics", {
+    userid: bigint({mode: "number"})
+            .notNull()
+            .unique()
+            .references(() => user.userid),
+    likesIn:     integer().default(0).notNull(),
+    likesOut:    integer().default(0).notNull(),
+    dislikesIn:  integer().default(0).notNull(),
+    dislikesOut: integer().default(0).notNull(),
+    videonotes:  integer().default(0).notNull(),
+    forms:       integer().default(0).notNull(),
+})
 
-// Verification fields:
-// userid BIGINT
-// verified_at TIMESTAMP (with moscow timezone)
-// videonote VARCHAR(256)
-// phrase VARCHAR(32)
-// verified_by BIGINT - Moderator that verified
+export {verification, referral, searchSettings, statistics}
 
-// Subscription fields:
-// userid BIGINT
-// status subscriptionEnum
-// end TIMESTAMP (with moscow timezone)
+export const verificationRelations = relations(verification, ({ one }) => ({
+    user: one(user, {
+        fields: [verification.userid],
+        references: [user.userid]
+    }),
+    verified_by: one(user, {
+        fields: [verification.verified_by_id],
+        references: [user.userid]
+    })
+}))
+
+export const referralRelations = relations(referral, ({ one }) => ({
+    user: one(user, {
+        fields: [referral.userid],
+        references: [user.userid]
+    }),
+    referrer: one(user, {
+        fields: [referral.referrer_id],
+        references: [user.userid]
+    })
+}))
+
+export const settingsRelations = relations(searchSettings, ({ one }) => ({
+    user: one(user, {
+        fields: [searchSettings.userid],
+        references: [user.userid]
+    })
+}))
+
+export const statisticsRelations = relations(statistics, ({ one }) => ({
+    user: one(user, {
+        fields: [statistics.userid],
+        references: [user.userid]
+    })
+}))
+
+export type NewUser = typeof user.$inferInsert
 
 export default user

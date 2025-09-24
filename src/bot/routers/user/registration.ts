@@ -5,6 +5,7 @@ import { inlineKeyboard, button } from "telegraf/markup"
 
 import { BaseContext, State } from "@/utils/fsm"
 import env from "@/env"
+import { updateVideonote } from "@/db/methods/update"
 
 const router = new Composer<BaseContext>();
 
@@ -25,7 +26,8 @@ router.on(message("video_note"), async (ctx, next) => {
 🆔 ID: ${uid}
 💭 Фраза: ${phrase}`
 
-    // TODO: Set user status to 'ON VERIFICATION' in ORM
+    // Set current videonote
+    await updateVideonote(ctx.message.video_note.file_id)
 
     // Send videonote with message
     await ctx.copyMessage(env.VIDEONOTE_CHAT)

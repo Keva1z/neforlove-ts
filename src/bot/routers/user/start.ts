@@ -5,6 +5,10 @@ import { BaseContext, State } from "@/utils/fsm"
 import { generate_phrase } from "@/utils/generate"
 import { Texts } from "@/constants/texts";
 
+import { createUser } from "@/db/methods/create"
+import { getUserByUserId } from "@/db/methods/get"
+import db from "@/db"
+
 const router = new Composer<BaseContext>();
 
 const startKeyboard = inlineKeyboard([
@@ -17,10 +21,21 @@ const policyKeyboard = inlineKeyboard([
 
 router.start(async (ctx) => {
     ctx.session.state = undefined
+
+    const result = await getUserByUserId(ctx.from.id)
+
+    if (result.user.verified) { return; } // TODO: Redirect to main menu
+
+    // Scenario where user on verification
+    if (result.verification?.videonote) {
+        await ctx.reply("Вы уже в процессе верификации, дождитесь пока вашу заявку проверит модератор.\n\nПоддержка: @Keva1z");
+        return;
+    }
+
     await ctx.reply(Texts.START, {parse_mode: "MarkdownV2", reply_markup: startKeyboard})
 })
 
-// Policy befor videonote
+// Policy before videonote
 router.action("Registration", async (ctx, next) => {
     if (ctx.session.state) return next();
 
@@ -51,10 +66,10 @@ router.action("Reg_disagree", async (ctx, next) => {
 async function sendRegistration(ctx: any, next: () => Promise<void>): Promise<void> {
     if (ctx.session.state != State.agreePolicy) return next();
 
-    // TODO: Check user verification state from ORM Model
-
     const phrase = generate_phrase()
     ctx.session.data.set("RegPhrase", phrase)
+
+    await createUser({userid: ctx.from.id}, phrase)
 
     await ctx.reply(Texts.REGISTRATION + phrase, {parse_mode: "MarkdownV2"})
 

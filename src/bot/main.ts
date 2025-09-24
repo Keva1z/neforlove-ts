@@ -4,8 +4,8 @@ import env from "@/env"
 import { BaseContext, resetSession } from "@/utils/fsm"
 
 // All routers
-import * as start from './routers/start';
-import * as registration from './routers/registration';
+import * as start from './routers/user/start';
+import * as registration from './routers/user/registration';
 
 
 // Define bot and session

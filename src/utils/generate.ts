@@ -25,3 +25,7 @@ export function generate_phrase(): string {
 
     return `${phrase} ${num}`
 }
+
+export const generateReferralCode = () => {
+  return Math.random().toString(36).slice(2, 10).toUpperCase();
+};
