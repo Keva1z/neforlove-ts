@@ -24,7 +24,8 @@
     "name": "neforlove-ts",
     "scripts": {
         "build": "tsc && tsc-alias",
-        "dev:bot": "tsx src/bot/main.ts"
+        "dev:bot": "tsx src/bot/main.ts",
+        "dev:reset-db": "tsx src/db/reset.ts"
     },
     "type": "module",
     "version": "0.1.0"

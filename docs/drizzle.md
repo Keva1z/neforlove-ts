@@ -27,3 +27,15 @@ npx drizzle-kit generate
 ```bash
 npx drizzle-kit migrate
 ```
+
+### Сброс базы для тестов
+
+Полностью удаляет Enums, Tables, и схему миграций drizzle
+```bash
+npm run dev:reset-db
+```
+
+после этого можете написать
+```bash
+npx drizzle-kit migrate
+```
