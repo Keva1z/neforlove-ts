@@ -7,7 +7,7 @@ import { Texts } from "@/constants/texts";
 
 import { createUser } from "@/db/methods/create"
 import { getUserByUserId } from "@/db/methods/get"
-import db from "@/db"
+import { updateInactive } from "@/db/methods/update"
 
 const router = new Composer<BaseContext>();
 
@@ -24,10 +24,12 @@ router.start(async (ctx) => {
 
     const result = await getUserByUserId(ctx.from.id)
 
-    if (result.user.verified) { return; } // TODO: Redirect to main menu
+    if (result?.user?.inactive) { await updateInactive(ctx.from.id, false) }
+
+    if (result?.user?.verified) { return; } // TODO: Redirect to main menu
 
     // Scenario where user on verification
-    if (result.verification?.videonote) {
+    if (result?.verification?.videonote) {
         await ctx.reply("Вы уже в процессе верификации, дождитесь пока вашу заявку проверит модератор.\n\nПоддержка: @Keva1z");
         return;
     }

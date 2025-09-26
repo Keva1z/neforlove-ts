@@ -23,11 +23,14 @@ const user = pgTable("users", {
 
     // Subscription fields
     subscription: subscriptionEnum().default("Free").notNull(),
-    subscriptionEnd: timestamp({mode: "date", withTimezone: true}),
+    subscriptionEnd: timestamp({mode: "string", withTimezone: true}),
 
     // Ban fields
     banned: boolean().default(false).notNull(),
-    banMessage: varchar({length: 128})
+    banMessage: varchar({length: 128}),
+    
+    // Inactive on bot-block
+    inactive: boolean().default(false).notNull(),
 });
 
 const verification = pgTable("verifications", {
@@ -35,7 +38,7 @@ const verification = pgTable("verifications", {
             .notNull()
             .unique()
             .references(() => user.userid),
-    verified_at: timestamp({mode: "date", withTimezone: true}),
+    verified_at: timestamp({mode: "string", withTimezone: true}),
     videonote: varchar({length: 256}),
     phrase: varchar({length: 32}).notNull(),
     verified_by_id: bigint({mode: "number"})

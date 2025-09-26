@@ -3,8 +3,6 @@ import {default as User, NewUser, searchSettings, statistics, referral, verifica
 import { generateReferralCode } from "@/utils/generate"
 import { eq } from "drizzle-orm"
 
-const allCodes = await db.select({code: referral.code}).from(referral).prepare("all_codes")
-
 export async function createUser(data: NewUser, phrase: string) {
     try {
         await db.transaction(async (tx) => {
@@ -14,6 +12,7 @@ export async function createUser(data: NewUser, phrase: string) {
             // If user exists, just update phrase.
             if (!user) { 
                 await tx.update(verification).set({phrase}).where(eq(verification.userid, data.userid))
+                console.log(`Пользователю ${data.userid} установлена фраза ${phrase}`)
                 return;
             };
             
@@ -22,7 +21,7 @@ export async function createUser(data: NewUser, phrase: string) {
             await tx.insert(verification).values({userid: user.userid, phrase}).onConflictDoNothing()
 
             // Generate unique code
-            const codes = (await allCodes.execute()).map(item => item.code)
+            const codes = (await tx.select({code: referral.code}).from(referral)).map(item => item.code)
             let code = generateReferralCode()
             while (code in codes) {
                 code = generateReferralCode()

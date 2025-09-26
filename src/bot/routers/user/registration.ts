@@ -10,8 +10,8 @@ import { updateVideonote } from "@/db/methods/update"
 const router = new Composer<BaseContext>();
 
 const approveKeyboard = (id: number) => inlineKeyboard([
-    [button.callback("✅ Мальчик", `verify:male:${id}`), button.callback("✅ Девочка", `verify:female:${id}`)],
-    [button.callback("❌ Отклонить", `verify:decline:${id}`)]
+    [button.callback("✅ Мальчик", `verifyVideonote:Male:${id}`), button.callback("✅ Девочка", `verifyVideonote:Female:${id}`)],
+    [button.callback("❌ Отклонить", `verifyVideonote:Unknown:${id}`)]
 ]).reply_markup
 
 // Handle user videonote 
@@ -24,10 +24,11 @@ router.on(message("video_note"), async (ctx, next) => {
 
     const text = fmt`>> ${link}
 🆔 ID: ${uid}
-💭 Фраза: ${phrase}`
+💭 Фраза: ${phrase}
+   #Ожидает`
 
     // Set current videonote
-    await updateVideonote(ctx.message.video_note.file_id)
+    await updateVideonote(uid, ctx.message.video_note.file_id)
 
     // Send videonote with message
     await ctx.copyMessage(env.VIDEONOTE_CHAT)

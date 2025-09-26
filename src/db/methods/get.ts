@@ -4,10 +4,20 @@ import {default as User, NewUser, searchSettings, statistics, referral, verifica
 
 const getuserbyuserid = await db.select({user: User, verification: verification}).from(User)
                                         .where(eq(User.userid, sql.placeholder("userid")))
-                                        .leftJoin(verification, eq(User.userid, sql.placeholder("userid")))
+                                        .fullJoin(verification, eq(User.userid, sql.placeholder("userid")))
                                         .limit(1)
                                         .prepare("getUserByUserId")
 
+const getrolebyuserid = await db.select({role: User.role}).from(User)
+                                        .where(eq(User.userid, sql.placeholder("userid")))
+                                        .limit(1).prepare("getUserByUserId")
+
 export async function getUserByUserId(userid: number) {
-    return (await getuserbyuserid.execute({userid}))[0]
+    const result = (await getuserbyuserid.execute({userid}))[0]
+    return result ? result : undefined
+}
+
+export async function getRoleByUserId(userid: number) {
+    const result = (await getrolebyuserid.execute({userid}))[0]
+    return result ? result.role : undefined
 }

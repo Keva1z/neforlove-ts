@@ -1,0 +1,2 @@
+ALTER TABLE "users" ALTER COLUMN "subscriptionEnd" SET DATA TYPE timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "verifications" ALTER COLUMN "verified_at" SET DATA TYPE timestamp with time zone;

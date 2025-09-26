@@ -3,9 +3,11 @@ import { Telegraf, session} from 'telegraf';
 import env from "@/env"
 import { BaseContext, resetSession } from "@/utils/fsm"
 
+import { updateInactive } from "@/db/methods/update"
+
 // All routers
-import * as start from './routers/user/start';
-import * as registration from './routers/user/registration';
+import * as userRoute from "./routers/user";
+import * as moderatorRoute from "./routers/moderator";
 
 
 // Define bot and session
@@ -17,7 +19,16 @@ bot.use(async (ctx, next) => {
   console.timeEnd(`[BOT] Handled update ${ctx.update.update_id} from [${ctx.from?.first_name}](${ctx.from?.id}) in`)
 });
 
-bot.use(start.router, registration.router)
+// When user block bot this calls
+bot.on("my_chat_member", async (ctx, next) => {
+    if (ctx.chat.id == ctx.from.id && ctx.myChatMember.new_chat_member.status == "kicked") {
+        await updateInactive(ctx.from.id, true)
+        return;
+    } // Set user as inactive
+    return next();
+})
+
+bot.use(userRoute.router, moderatorRoute.router)
 
 
 bot.launch(async () => {
