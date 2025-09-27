@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Telegraf.js-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegraf">
+  <img src="https://img.shields.io/badge/grammY.js-26A5E4?style=for-the-badge&logo=telegram&logoColor=white" alt="Grammy">
   <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js">
   <br>
   <img src="https://img.shields.io/github/package-json/v/Keva1z/neforlove-ts?style=for-the-badge&color=purple" alt="Version">
@@ -12,7 +12,7 @@
 
 Telegram-бот для знакомств, созданный специально для неформального сообщества. Позволяет находить единомышленников, общаться и знакомиться в комфортной атмосфере.
 
-Изначально проект был разработан на Python с использованием aiogram, но сейчас активно переписывается на TypeScript с фреймворком Telegraf.js.
+Изначально проект был разработан на Python с использованием aiogram, но сейчас активно переписывается на TypeScript с фреймворком Grammy.js.
 
 **Разработчик:** [@Keva1z](https://t.me/Keva1z)
 
