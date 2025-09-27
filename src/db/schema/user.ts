@@ -10,6 +10,8 @@ import { relations } from "drizzle-orm";
 import { InferInsertModel } from "drizzle-orm";
 
 import { sexEnum, roleEnum, subscriptionEnum } from "./enums"
+import { Form, Location } from "./form";
+
 
 const user = pgTable("users", {
     id: serial().primaryKey(),
@@ -86,41 +88,74 @@ const statistics = pgTable("user_statistics", {
     forms:       integer().default(0).notNull(),
 })
 
-export {verification, referral, searchSettings, statistics}
+export {user, verification, referral, searchSettings, statistics}
+
+export const userRelations = relations(user, ({ one, many }) => ({
+  settings: one(searchSettings, {
+    fields: [user.userid],
+    references: [searchSettings.userid]
+  }),
+  statistics: one(statistics, {
+    fields: [user.userid],
+    references: [statistics.userid]
+  }),
+  referral: one(referral, {
+    fields: [user.userid],
+    references: [referral.userid],
+    relationName: "referral"
+  }),
+  verification: one(verification, {
+    fields: [user.userid],
+    references: [verification.userid],
+    relationName: "verification"
+  }),
+  form: one(Form, {
+    fields: [user.userid],
+    references: [Form.userid],
+    relationName: "form"
+  }),
+  locations: many(Location)
+}));
 
 export const verificationRelations = relations(verification, ({ one }) => ({
     user: one(user, {
         fields: [verification.userid],
-        references: [user.userid]
+        references: [user.userid],
+        relationName: "user"
     }),
     verified_by: one(user, {
         fields: [verification.verified_by_id],
-        references: [user.userid]
+        references: [user.userid],
+        relationName: "moderator"
     })
 }))
 
 export const referralRelations = relations(referral, ({ one }) => ({
     user: one(user, {
         fields: [referral.userid],
-        references: [user.userid]
+        references: [user.userid],
+        relationName: "user"
     }),
     referrer: one(user, {
         fields: [referral.referrer_id],
-        references: [user.userid]
+        references: [user.userid],
+        relationName: "referrer"
     })
 }))
 
 export const settingsRelations = relations(searchSettings, ({ one }) => ({
     user: one(user, {
         fields: [searchSettings.userid],
-        references: [user.userid]
+        references: [user.userid],
+        relationName: "user"
     })
 }))
 
 export const statisticsRelations = relations(statistics, ({ one }) => ({
     user: one(user, {
         fields: [statistics.userid],
-        references: [user.userid]
+        references: [user.userid],
+        relationName: "user"
     })
 }))
 

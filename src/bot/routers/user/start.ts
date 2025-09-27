@@ -30,16 +30,16 @@ router.command("start", async (ctx) => {
     const result = await getUserByUserId(ctx.from!.id)
 
     // Set as active
-    if (result?.user?.inactive) { await updateInactive(ctx.from!.id, false) }
+    if (result?.inactive) { await updateInactive(ctx.from!.id, false) }
 
     // Menu
-    if (result?.user?.verified) { 
+    if (result?.verified) { 
         await ctx.replyWithPhoto(menuPhoto, {reply_markup: menuKb})
         return;
     }
 
     // Scenario where user on verification
-    if (result?.verification?.videonote) {
+    if (result?.verification.videonote) {
         await ctx.reply("Вы уже в процессе верификации, дождитесь пока вашу заявку проверит модератор.\n\nПоддержка: @Keva1z");
         return;
     }
