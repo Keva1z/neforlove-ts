@@ -1,5 +1,7 @@
-import { Composer, Input } from "telegraf";
-import { inlineKeyboard, button } from "telegraf/markup"
+// import { Composer, Input } from "telegraf";
+// import { inlineKeyboard, button } from "telegraf/markup"
+
+import { Composer, InputFile, InlineKeyboard, CallbackQueryContext } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm"
 import { generate_phrase } from "@/utils/generate"
@@ -12,23 +14,23 @@ import { menuKb } from "./menu";
 
 const router = new Composer<BaseContext>();
 
-const startKeyboard = inlineKeyboard([
-    [button.callback("Зарегестрироваться", "Registration")], [button.callback("Смотреть анкеты", "Forms-Noreg")]
-]).reply_markup
+const startKeyboard = new InlineKeyboard()
+                        .text("Зарегестрироваться", "Registration").row()
+                        .text("Смотреть анкеты", "Forms-Noreg")
 
-const policyKeyboard = inlineKeyboard([
-    [button.callback("Согласен", "Reg_agree"), button.callback("Не согласен", "Reg_disagree")]
-]).reply_markup
+const policyKeyboard = new InlineKeyboard()
+                        .text("Согласен", "Reg_agree")
+                        .text("Не согласен", "Reg_disagree")
 
-const menuPhoto = Input.fromLocalFile("assets/NeforLove.png", "Menu")
+const menuPhoto = new InputFile("assets/NeforLove.png", "Menu")
 
-router.start(async (ctx) => {
+router.command("start", async (ctx) => {
     ctx.session.state = undefined
 
-    const result = await getUserByUserId(ctx.from.id)
+    const result = await getUserByUserId(ctx.from!.id)
 
     // Set as active
-    if (result?.user?.inactive) { await updateInactive(ctx.from.id, false) }
+    if (result?.user?.inactive) { await updateInactive(ctx.from!.id, false) }
 
     // Menu
     if (result?.user?.verified) { 
@@ -45,35 +47,35 @@ router.start(async (ctx) => {
     await ctx.reply(Texts.START, {parse_mode: "MarkdownV2", reply_markup: startKeyboard})
 })
 
-// Policy before videonote
-router.action("Registration", async (ctx, next) => {
+// // Policy before videonote
+router.callbackQuery("Registration", async (ctx, next) => {
     if (ctx.session.state) return next();
 
-    await ctx.deleteMessage(ctx.callbackQuery.message?.message_id)
+    await ctx.deleteMessage()
     await ctx.reply(Texts.POLICY, {parse_mode: "MarkdownV2", reply_markup: policyKeyboard, link_preview_options: {is_disabled: true}})
 
     ctx.session.state = State.agreePolicy
 })
 
-router.action("Reg_agree", async (ctx, next) => {
+router.callbackQuery("Reg_agree", async (ctx, next) => {
     if (ctx.session.state != State.agreePolicy) return next();
 
-    await ctx.deleteMessage(ctx.callbackQuery.message?.message_id)
+    await ctx.deleteMessage()
     await ctx.reply("Прекрасно! Продолжаем...")
     await sendRegistration(ctx, next)
 })
 
-router.action("Reg_disagree", async (ctx, next) => {
+router.callbackQuery("Reg_disagree", async (ctx, next) => {
     if (ctx.session.state != State.agreePolicy) return next();
 
-    await ctx.deleteMessage(ctx.callbackQuery.message?.message_id)
+    await ctx.deleteMessage()
     await ctx.reply("К сожалению, далее мы продолжить не можем.\nВы можете попробовать других ботов для знакомств в Telegram!\nВозвращайтесь если передумаете :)")
     ctx.session.state = undefined
 })
 
 
-// Send message with Registration phase
-async function sendRegistration(ctx: any, next: () => Promise<void>): Promise<void> {
+// // Send message with Registration phase
+async function sendRegistration(ctx: CallbackQueryContext<BaseContext>, next: () => Promise<void>): Promise<void> {
     if (ctx.session.state != State.agreePolicy) return next();
 
     const phrase = generate_phrase()
@@ -85,7 +87,6 @@ async function sendRegistration(ctx: any, next: () => Promise<void>): Promise<vo
 
     ctx.session.state = State.waitingVideoNote
 }
-
 
 // TODO: Create route on "Forms-Noreg" callback
 

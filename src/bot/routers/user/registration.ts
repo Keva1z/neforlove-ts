@@ -1,26 +1,25 @@
-import { Composer } from "telegraf"
-import { message } from "telegraf/filters"
-import { fmt, mention } from "telegraf/format"
-import { inlineKeyboard, button } from "telegraf/markup"
+import { Composer, InputFile, InlineKeyboard,  } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm"
 import env from "@/env"
 import { updateVideonote } from "@/db/methods/update"
+import { mentionUser, fmt,  } from "@grammyjs/parse-mode";
+
 
 const router = new Composer<BaseContext>();
 
-const approveKeyboard = (id: number) => inlineKeyboard([
-    [button.callback("✅ Мальчик", `verifyVideonote:Male:${id}`), button.callback("✅ Девочка", `verifyVideonote:Female:${id}`)],
-    [button.callback("❌ Отклонить", `verifyVideonote:Unknown:${id}`)]
-]).reply_markup
+const approveKeyboard = (id: number) => new InlineKeyboard()
+                                            .text("✅ Мальчик", `verifyVideonote:Male:${id}`)
+                                            .text("✅ Девочка", `verifyVideonote:Female:${id}`).row()
+                                            .text("❌ Отклонить", `verifyVideonote:Unknown:${id}`)
 
 // Handle user videonote 
-router.on(message("video_note"), async (ctx, next) => {
+router.on(":video_note", async (ctx, next) => {
     if (ctx.session.state != State.waitingVideoNote) return next();
 
-    const uid = ctx.from.id
+    const uid = ctx.from!.id
     const phrase = ctx.session.data.get("RegPhrase")
-    const link = mention(ctx.from.first_name, ctx.from)
+    const link = mentionUser(ctx.from!.first_name, ctx.from!.id)
 
     const text = fmt`>> ${link}
 🆔 ID: ${uid}
@@ -28,11 +27,11 @@ router.on(message("video_note"), async (ctx, next) => {
    #Ожидает`
 
     // Set current videonote
-    await updateVideonote(uid, ctx.message.video_note.file_id)
+    await updateVideonote(uid, ctx.message!.video_note.file_id)
 
     // Send videonote with message
     await ctx.copyMessage(env.VIDEONOTE_CHAT)
-    await ctx.telegram.sendMessage(env.VIDEONOTE_CHAT, text, {parse_mode: "MarkdownV2", reply_markup: approveKeyboard(uid)})
+    await ctx.api.sendMessage(env.VIDEONOTE_CHAT, text.text, {entities: text.entities, reply_markup: approveKeyboard(uid)})
 
     await ctx.reply("Ваш кружок был отправлен на модерацию!\nПожалуйста, ожидайте решения.")
 

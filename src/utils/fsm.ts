@@ -1,19 +1,19 @@
-import { type Context } from 'telegraf';
-import type { Update } from "telegraf/types";
+import type {  } from '@grammyjs/parse-mode';
+import { Context, SessionFlavor } from 'grammy';
 
 export enum State {
     agreePolicy = "agreePolicy",
     waitingVideoNote = "waitingVideoNote",
 }
 
-// FSM Context
-export interface BaseContext <U extends Update = Update> extends Context<U> {
-	session: {
-		state: State | undefined,
-        data: Map<any, any>
-	},
-};
+interface SessionData {
+    state: State | undefined,
+    data: Map<any, any>
+}
 
-export function resetSession() {
+// FSM Context
+export type BaseContext = Context & SessionFlavor<SessionData>; 
+
+export function resetSession(): SessionData {
     return {state: undefined, data: new Map()}
 }

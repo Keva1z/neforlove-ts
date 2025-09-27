@@ -1,4 +1,4 @@
-import { Composer } from "telegraf";
+import { Composer } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm"
 import { isRole } from "@/bot/filters/roleFilter";
@@ -12,7 +12,7 @@ router.use(async (ctx, next) => {
     if (!ctx.from) { return; }
     if (await isRole(ctx.from.id, ["Owner"])) { return next() }
 
-    try { await ctx.answerCbQuery() } catch {}
+    try { await ctx.answerCallbackQuery() } catch {}
 
     return;
 });

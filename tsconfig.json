@@ -18,8 +18,7 @@
         "target": "esnext",
         "types": [
             "node",
-            "dotenv",
-            "telegraf"
+            "dotenv"
         ]
     },
     "exclude": [

@@ -1,4 +1,4 @@
-import { Composer } from "telegraf";
+import { Composer } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm"
 import { isRole } from "@/bot/filters/roleFilter";
@@ -6,7 +6,7 @@ import { isRole } from "@/bot/filters/roleFilter";
 import * as start from './start';
 import * as registration from './registration';
 
-const router = new Composer<BaseContext>();
+const router = new Composer();
 
 // Dont need role middleware
 

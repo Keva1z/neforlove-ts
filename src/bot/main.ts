@@ -1,5 +1,6 @@
 
-import { Telegraf, session} from 'telegraf';
+import { Bot, session } from 'grammy';
+import { run } from "@grammyjs/runner";
 import env from "@/env"
 import { BaseContext, resetSession } from "@/utils/fsm"
 
@@ -12,8 +13,9 @@ import * as ownerRoute from "./routers/owner";
 
 
 // Define bot and session
-const bot = new Telegraf<BaseContext>(env.TOKEN);
-bot.use(session({defaultSession: () => resetSession()}))
+const bot = new Bot<BaseContext>(env.TOKEN);
+bot.use(session({initial: resetSession}))
+
 bot.use(async (ctx, next) => {
   console.time(`[BOT] Handled update ${ctx.update.update_id} from [${ctx.from?.first_name}](${ctx.from?.id}) in`)
   await next();
@@ -31,11 +33,8 @@ bot.on("my_chat_member", async (ctx, next) => {
 
 bot.use(userRoute.router, moderatorRoute.router, ownerRoute.router)
 
-
-bot.launch(async () => {
-    console.log("Bot started")
-});
+run(bot)
 
 
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+process.once('SIGINT', () => bot.stop());
+process.once('SIGTERM', () => bot.stop());

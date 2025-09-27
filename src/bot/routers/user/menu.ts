@@ -1,5 +1,4 @@
-import { Composer } from "telegraf";
-import { inlineKeyboard, button } from "telegraf/markup"
+import { Composer, InlineKeyboard } from "grammy";
 
 import { BaseContext } from "@/utils/fsm"
 
@@ -11,17 +10,12 @@ import {default as profileRouter} from "./menu/profile"
 import {default as matchRouter} from "./menu/match"
 import {default as searchRouter} from "./menu/search"
 
-export const menuKb = inlineKeyboard([
-    [
-        button.callback("🔎 Поиск", "Search"),
-        button.callback("❤️ Мэтчи", "Matches")
-    ],
-    [
-        button.callback("👤 Профиль", "Profile"),
-        button.callback("🛍 Магазин", "Shop")
-    ],
-    [button.callback("⚙️ Настройки ⚙️", "settings")]
-]).reply_markup
+export const menuKb = new InlineKeyboard()
+                          .text("🔎 Поиск", "Search")
+                          .text("❤️ Мэтчи", "Matches").row()
+                          .text("👤 Профиль", "Profile")
+                          .text("🛍 Магазин", "Shop").row()
+                          .text("⚙️ Настройки ⚙️", "settings")
 
 // All menu routers
 router.use(

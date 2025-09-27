@@ -1,4 +1,4 @@
-import { Composer } from "telegraf";
+import { Composer } from "grammy";
 
 import { BaseContext } from "@/utils/fsm"
 
