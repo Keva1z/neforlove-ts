@@ -27,12 +27,12 @@ router.start(async (ctx) => {
 
     const result = await getUserByUserId(ctx.from.id)
 
+    // Set as active
     if (result?.user?.inactive) { await updateInactive(ctx.from.id, false) }
 
+    // Menu
     if (result?.user?.verified) { 
-        await ctx.replyWithPhoto(menuPhoto, {
-            reply_markup: menuKb, caption: "💓 >> 💞 Главное меню 💞 << 💓"
-        })
+        await ctx.replyWithPhoto(menuPhoto, {reply_markup: menuKb})
         return;
     }
 
