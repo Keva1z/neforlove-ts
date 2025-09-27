@@ -8,6 +8,7 @@ import { updateInactive } from "@/db/methods/update"
 // All routers
 import * as userRoute from "./routers/user";
 import * as moderatorRoute from "./routers/moderator";
+import * as ownerRoute from "./routers/owner";
 
 
 // Define bot and session
@@ -28,7 +29,7 @@ bot.on("my_chat_member", async (ctx, next) => {
     return next();
 })
 
-bot.use(userRoute.router, moderatorRoute.router)
+bot.use(userRoute.router, moderatorRoute.router, ownerRoute.router)
 
 
 bot.launch(async () => {
