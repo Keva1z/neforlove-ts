@@ -27,5 +27,6 @@ Thumbs.db
 .env.local
 .env.*.local
 
-# Database
+# DATA
 db-data
+redis-data
