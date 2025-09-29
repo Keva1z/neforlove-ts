@@ -26,7 +26,7 @@ router.callbackQuery(/verifyVideonote:(.+)$/, async (ctx, next) => {
     const user = await getUserByUserId(userid)
 
     // Checks on 'Exists', 'banned', 'verified', 'inactive'
-    if (!user || user?.user?.banned || user?.user?.verified || user?.user?.inactive) {
+    if (!user || user.banned || user.verified || user.inactive) {
         await defence(userid, ctx)
         return;
     }
@@ -48,7 +48,8 @@ router.callbackQuery(/verifyVideonote:(.+)$/, async (ctx, next) => {
                 break;
         }
 
-        if (!ctx.msg!.text) {return;}
+        if (!ctx.msg!.text) return;
+        
         await ctx.editMessageText(ctx.msg!.text.replace("   #Ожидает", replaceText),
                                                 {reply_markup: undefined, entities: ctx.msg!.entities})
     } catch (error) {

@@ -2,12 +2,12 @@ import db from "@/db"
 import { eq, sql } from "drizzle-orm"
 import {default as User, NewUser, searchSettings, statistics, referral, verification} from "@/db/schema/user"
 
-const getrolebyuserid = await db.query.user.findFirst({
+const getrolebyuserid = db.query.user.findFirst({
     columns: {role: true},
     where: eq(User.userid, sql.placeholder("userid"))
 }).prepare("getRoleByUserId")
 
-const getuserbyuserid = await db.query.user.findFirst({
+const getuserbyuserid = db.query.user.findFirst({
         where: eq(User.userid, sql.placeholder("userid")),
         with: {verification: true}
     }).prepare("getUserByUserId")

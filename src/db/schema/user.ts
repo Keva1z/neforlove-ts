@@ -7,7 +7,6 @@ import { pgTable,
     integer
 } from "drizzle-orm/pg-core"; 
 import { relations } from "drizzle-orm";
-import { InferInsertModel } from "drizzle-orm";
 
 import { sexEnum, roleEnum, subscriptionEnum } from "./enums"
 import { Form, Location } from "./form";
@@ -40,10 +39,10 @@ const verification = pgTable("verifications", {
             .notNull()
             .unique()
             .references(() => user.userid),
-    verified_at: timestamp({mode: "string", withTimezone: true}),
+    verifiedAt: timestamp({mode: "string", withTimezone: true}),
     videonote: varchar({length: 256}),
     phrase: varchar({length: 32}).notNull(),
-    verified_by_id: bigint({mode: "number"})
+    verifiedById: bigint({mode: "number"})
             .unique()
             .references(() => user.userid)
 })
@@ -54,7 +53,7 @@ const referral = pgTable("referrals", {
             .unique()
             .references(() => user.userid),
     code: varchar({length: 32}).notNull().unique(),
-    referrer_id: bigint({mode: "number"})
+    referrerId: bigint({mode: "number"})
             .unique()
             .references(() => user.userid),
     verified: integer().default(0).notNull(),
@@ -72,7 +71,7 @@ const searchSettings = pgTable("search_settings", {
     ageTo: integer().default(40).notNull(),
     city: varchar({length: 128}),
     distance: integer().default(1000).notNull(), // In meters
-    by_distance: boolean().default(false).notNull()
+    byDistance: boolean().default(false).notNull()
 })
 
 const statistics = pgTable("user_statistics", {
@@ -124,7 +123,7 @@ export const verificationRelations = relations(verification, ({ one }) => ({
         relationName: "user"
     }),
     verified_by: one(user, {
-        fields: [verification.verified_by_id],
+        fields: [verification.verifiedById],
         references: [user.userid],
         relationName: "moderator"
     })
@@ -137,7 +136,7 @@ export const referralRelations = relations(referral, ({ one }) => ({
         relationName: "user"
     }),
     referrer: one(user, {
-        fields: [referral.referrer_id],
+        fields: [referral.referrerId],
         references: [user.userid],
         relationName: "referrer"
     })

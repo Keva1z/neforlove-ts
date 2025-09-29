@@ -11,7 +11,7 @@ router.command("testStars", async (ctx, next) => {
         'Привелегия "Premium" на 1 месяц.',
         `${ctx.update.update_id}_${Date.now()}`,
         'XTR', // Telegram Stars currency code
-        [{ label: 'XTR', amount: starsAmount}], // Amount in smallest units (e.g., 1 Star = 100)
+        [{ label: 'XTR', amount: starsAmount}],
   );
 })
 

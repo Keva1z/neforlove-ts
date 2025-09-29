@@ -13,11 +13,11 @@ export async function updateInactive(userid: number, inactive: typeof User.$infe
 }
 
 /**
- * if verified_by_id is True -> set timestamp & update User.verified
+ * if verifiedById is True -> set timestamp & update User.verified
  */
-export async function updateVerifiedBy(userid: number, gender: typeof User.$inferSelect.sex, verified_by_id: typeof verification.$inferSelect.verified_by_id) {
+export async function updateVerifiedBy(userid: number, gender: typeof User.$inferSelect.sex, verifiedById: typeof verification.$inferSelect.verifiedById) {
     const timestamp = DateTime.now().setZone("Europe/Moscow")
-    await db.update(verification).set({verified_by_id, verified_at: verified_by_id ? timestamp.toSQL({includeOffset: true}) : null}).where(eq(verification.userid, userid))
-    await db.update(User).set({sex: gender, verified: verified_by_id ? true : false})
+    await db.update(verification).set({verifiedById, verifiedAt: verifiedById ? timestamp.toSQL({includeOffset: true}) : null}).where(eq(verification.userid, userid))
+    await db.update(User).set({sex: gender, verified: verifiedById ? true : false})
 }
 

@@ -28,14 +28,14 @@ const Form = pgTable("Forms", {
             .notNull()
             .default(sql`ARRAY[]::varchar[]`),
 
-    location_id: integer()
+    locationId: integer()
                  .notNull()
                  .references(() => Location.id),
 
     // Form meta
     searchId: integer().notNull().unique(),
     status: boolean().default(false).notNull(),
-    verified_at: timestamp({mode: "string", withTimezone: true}),
+    verifiedAt: timestamp({mode: "string", withTimezone: true}),
     
     // Inactive
     inactive: boolean().default(false).notNull(),
@@ -46,7 +46,7 @@ const Location = pgTable("locations", {
     userid: bigint({mode: "number"})
             .notNull()
             .references(() => user.userid),
-    created_at: timestamp({mode: "string", withTimezone: true}),
+    createdAt: timestamp({mode: "string", withTimezone: true}),
     location: geometry({type: "point", mode: "xy", srid: 4326}).notNull()
 })
 
@@ -57,7 +57,7 @@ export const formRelations = relations(Form, ({ one }) => ({
         relationName: "user"
     }),
     location: one(Location, {
-        fields: [Form.location_id],
+        fields: [Form.locationId],
         references: [Location.id],
         relationName: "location_ref"
     })
@@ -71,7 +71,7 @@ export const locationRelations = relations(Location, ({ one }) => ({
     }),
     form: one(Form, {
         fields: [Location.id],
-        references: [Form.location_id],
+        references: [Form.locationId],
         relationName: "form"
     })
 }))
