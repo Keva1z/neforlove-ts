@@ -7,6 +7,7 @@ import { getUserByUserId } from "@/db/methods/get"
 import { sexEnum } from "@/db/schema/enums";
 import { mentionUser, fmt,  } from "@grammyjs/parse-mode";
 import { DateTime } from "luxon";
+import { formCreateKb } from "@/bot/routers/user/form"
 
 const router = new Composer<BaseContext>();
 
@@ -43,7 +44,7 @@ router.callbackQuery(/verifyVideonote:(.+)$/, async (ctx, next) => {
                 replaceText = `💂🏻 Кем: ${ctx.from.username ? `@${ctx.from.username}` : `${ctx.from.first_name}` }\n   #Отклонен`
                 break;
             default:
-                await ctx.api.sendMessage(userid, "Вы были верифицированы!\nОткройте меню для последующих действий.\n/start")
+                await ctx.api.sendMessage(userid, "Вы были верифицированы!", {reply_markup: formCreateKb})
                 await updateVerifiedBy(userid, gender, ctx.from.id)
                 break;
         }

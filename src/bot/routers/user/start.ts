@@ -12,6 +12,10 @@ import { getUserByUserId } from "@/db/methods/get"
 import { updateInactive } from "@/db/methods/update"
 import { menuKb } from "./menu";
 
+import { formCreateKb } from "@/bot/routers/user/form"
+
+
+
 const router = new Composer<BaseContext>();
 
 const startKeyboard = new InlineKeyboard()
@@ -34,7 +38,14 @@ router.command("start", async (ctx) => {
 
     // Menu
     if (result?.verified) { 
-        await ctx.replyWithPhoto(menuPhoto, {reply_markup: menuKb})
+        
+        let kb = menuKb
+
+        if (!result?.form) {
+            kb = formCreateKb.clone().append(kb.inline_keyboard)
+        }
+        
+        await ctx.replyWithPhoto(menuPhoto, {reply_markup: kb})
         return;
     }
 
@@ -47,7 +58,7 @@ router.command("start", async (ctx) => {
     await ctx.reply(Texts.START, {parse_mode: "MarkdownV2", reply_markup: startKeyboard})
 })
 
-// // Policy before videonote
+// Policy before videonote
 router.callbackQuery("Registration", async (ctx, next) => {
     if (ctx.session.state) return next();
 
@@ -74,7 +85,7 @@ router.callbackQuery("Reg_disagree", async (ctx, next) => {
 })
 
 
-// // Send message with Registration phase
+// Send message with Registration phase
 async function sendRegistration(ctx: CallbackQueryContext<BaseContext>, next: () => Promise<void>): Promise<void> {
     if (ctx.session.state != State.agreePolicy) return next();
 
