@@ -47,6 +47,13 @@ const Location = pgTable("locations", {
             .notNull()
             .references(() => user.userid),
     createdAt: timestamp({mode: "string", withTimezone: true}),
+
+    country: varchar({length: 128}).notNull(),
+    state: varchar({length: 128}).notNull(),
+    city: varchar({length: 128}),
+    latitude: integer().notNull(),
+    longitude: integer().notNull(),
+
     location: geometry({type: "point", mode: "xy", srid: 4326}).notNull()
 })
 

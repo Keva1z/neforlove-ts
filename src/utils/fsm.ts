@@ -14,6 +14,14 @@ export enum State {
     media = "media"
 }
 
+export interface LocationData {
+    country: string,
+    state: string,
+    city: string | undefined,
+    lat: number,
+    lon: number
+}
+
 interface SessionData {
     state: State | undefined,
     data: Map<any, any>,
@@ -21,7 +29,7 @@ interface SessionData {
         name: string | undefined,
         age: number | undefined,
         description: string | undefined,
-        location: { x: number, y: number } | undefined,
+        location: LocationData | undefined,
         media: string[] | undefined,
     }
 }
