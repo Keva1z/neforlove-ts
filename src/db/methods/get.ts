@@ -26,3 +26,11 @@ export async function getVerifiedByUserId(userid: number) {
     }).catch(() => {return undefined})
     return result?.verified
 }
+
+export async function getSubscriptionByUserId(userid: number) {
+    const result = await db.query.user.findFirst({
+        columns: {subscription: true},
+        where: eq(User.userid, userid)
+    }).catch(() => {return undefined})
+    return result?.subscription
+}

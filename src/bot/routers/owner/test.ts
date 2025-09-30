@@ -19,4 +19,24 @@ router.command("testLocation", async (ctx, next) => {
     ctx.session.state = State.location
 })
 
+router.command("testMedia", async (ctx, next) => {
+    ctx.session.state = State.media
+
+    await ctx.reply("Отправь медиа")
+})
+
+router.command("testGetMedia", async (ctx, next) => {
+    ctx.session.formData.media?.forEach(async (media, i) => {
+        switch (media.slice(0, 1)) {
+            case "p":
+                await ctx.replyWithPhoto(media.slice(2), {caption: `photo ${i}`})
+                break;
+            case "v":
+                await ctx.replyWithVideo(media.slice(2), {caption: `video ${i}`})
+        }
+    })
+
+    ctx.session.formData.media = undefined
+})
+
 export { router }

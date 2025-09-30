@@ -9,7 +9,7 @@ import {default as nameRouter} from "./name"
 import {default as ageRouter} from "./age"
 import {default as aboutRouter} from "./about"
 import {default as locationRouter} from "./location"
-// import {default as searchRouter} from "../menu/search"
+import {default as mediaRouter} from "./media"
 
 export const formCreateKb = new InlineKeyboard().text("📝 Создать анкету", "CreateForm")
 
@@ -32,12 +32,13 @@ router.callbackQuery("CreateForm", async (ctx, next) => {
     ctx.session.state = State.name
 })
 
-// All menu routers
+// All form creation routers
 router.use(
     nameRouter,
     ageRouter,
     aboutRouter,
-    locationRouter
+    locationRouter,
+    mediaRouter
 )
 
 export { router }
