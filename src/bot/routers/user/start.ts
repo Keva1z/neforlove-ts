@@ -41,9 +41,15 @@ router.command("start", async (ctx) => {
         } catch (error) {};
 
         switch (ctx.session.state) {
-            case State.media || State.confirmCreateForm:
-                await ctx.reply("Создание анкеты отменено!")
-        }
+            case State.name:
+            case State.age:
+            case State.about:
+            case State.location:
+            case State.media:
+            case State.confirmCreateForm:
+                await ctx.reply("Создание анкеты отменено!");
+                break;
+        }       
     }
 
     ctx.session.state = undefined

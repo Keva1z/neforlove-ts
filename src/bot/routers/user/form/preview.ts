@@ -76,7 +76,27 @@ router.callbackQuery("proceed_form", async (ctx, next) => {
     }
 
     ctx.session.state = undefined
+    ctx.session.message = undefined
     ctx.session.formData = emptyFormData()
+})
+
+// Cancel form creation
+router.callbackQuery("cancel_form", async (ctx, next) => {
+    if (ctx.session.state != State.confirmCreateForm || !ctx.session.formData.media) {
+        await ctx.deleteMessage()
+        return next()
+    };
+
+    ctx.session.state = undefined
+    ctx.session.message = undefined
+    ctx.session.formData = emptyFormData()
+
+    try {
+        await ctx.editMessageText("Создание анкеты отменено!", {reply_markup: undefined})
+    } catch (error) {
+        await ctx.deleteMessage()
+        await ctx.reply("Создание анкеты отменено!")
+    }
 })
 
 export default router
