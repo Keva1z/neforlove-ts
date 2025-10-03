@@ -4,6 +4,7 @@ import { BaseContext, State } from "@/utils/fsm"
 import { getLocationData } from "@/services/geoapify";
 import { getMediaLimit } from "./media";
 
+
 const router = new Composer<BaseContext>();
 
 router.on(":location", async (ctx, next) => {
@@ -29,7 +30,8 @@ router.on(":location", async (ctx, next) => {
 
     await ctx.reply(`Определили вашу локацию как:<b>\n${location}</b>`, {parse_mode: "HTML"})
 
-    await ctx.reply(`Отправьте медиа 0/${await getMediaLimit(ctx.from.id)}`)
+    const msg = await ctx.reply(`Отправьте медиа 0/${await getMediaLimit(ctx.from.id)}`, {reply_markup: {remove_keyboard: true}})
+    ctx.session.message = {chat_id: msg.chat.id, message_id: msg.message_id}
 })
 
 export default router

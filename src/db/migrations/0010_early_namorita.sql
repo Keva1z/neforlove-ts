@@ -1,0 +1,1 @@
+ALTER TABLE "Forms" ALTER COLUMN "searchId" SET DATA TYPE integer;

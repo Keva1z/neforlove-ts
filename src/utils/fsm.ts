@@ -1,5 +1,6 @@
 import type {  } from '@grammyjs/parse-mode';
 import { Context, SessionFlavor } from 'grammy';
+import { Message } from "grammy/types"
 
 export enum State {
     // Base states
@@ -11,7 +12,8 @@ export enum State {
     age = "age",
     about = "about",
     location = "location",
-    media = "media"
+    media = "media",
+    confirmCreateForm = "confirm"
 }
 
 export interface LocationData {
@@ -22,16 +24,22 @@ export interface LocationData {
     lon: number
 }
 
+export interface FormData {
+    name: string | undefined,
+    age: number | undefined,
+    description: string | undefined,
+    location: LocationData | undefined,
+    media: string[] | undefined,
+}
+
 interface SessionData {
     state: State | undefined,
     data: Map<any, any>,
-    formData: {
-        name: string | undefined,
-        age: number | undefined,
-        description: string | undefined,
-        location: LocationData | undefined,
-        media: string[] | undefined,
-    }
+    formData: FormData
+    message: {
+        chat_id: number,
+        message_id: number
+    } | undefined
 }
 
 // FSM Context
@@ -47,6 +55,17 @@ export function resetSession(): SessionData {
             description: undefined,
             location: undefined,
             media: undefined,
-        }
+        },
+        message: undefined,
+    }
+}
+
+export function emptyFormData(): FormData {
+    return {
+        name: undefined,
+        age: undefined,
+        description: undefined,
+        location: undefined,
+        media: undefined,
     }
 }

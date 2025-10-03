@@ -1,4 +1,4 @@
-import { Composer } from "grammy";
+import { Composer, InlineKeyboard } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm"
 import { getSubscriptionByUserId } from "@/db/methods/get";
@@ -6,6 +6,11 @@ import { Mutex } from "async-mutex";
 
 // Locking media handlers, to handle media in send order
 const locks = new Map<number, Mutex>();
+
+const formStopKb = new InlineKeyboard().text("✅ Завершить", "stopForm")
+const formProceedKb = new InlineKeyboard()
+                        .text("✅ Да", "proceed_form")
+                        .text("❌ Отмена", "cancel_form")
 
 function getMutex(userId: number): Mutex {
   if (!locks.has(userId)) {
@@ -29,8 +34,12 @@ export async function getMediaLimit(userid: number) {
 const router = new Composer<BaseContext>();
 
 router.on(":media", async (ctx, next) => {
-    if (ctx.session.state != State.media || !ctx.message) return next();
+    if (ctx.session.state != State.media ||
+        !ctx.message ||
+        !ctx.session.formData.location) return next();
     const mutex = getMutex(ctx.from.id);
+    let reached = false;
+
 
     await mutex.runExclusive(async () => {
         if (!ctx.session.formData.media) ctx.session.formData.media = []
@@ -49,10 +58,47 @@ router.on(":media", async (ctx, next) => {
 
         mediaLength = ctx.session.formData.media?.length
 
-        await ctx.reply(`Загружено ${mediaLength}/${mediaLimit}`)
+        const markup = mediaLength && mediaLength >= mediaLimit ? undefined : formStopKb
+
+        // const msg = await ctx.reply(`Загружено ${mediaLength}/${mediaLimit}`, {reply_markup: markup})
+        try {
+            if (ctx.session.message) {
+                await ctx.api.deleteMessage(
+                    ctx.session.message.chat_id,
+                    ctx.session.message.message_id
+                )
+                const msg = await ctx.reply(`Загружено ${mediaLength}/${mediaLimit}`, {reply_markup: markup})
+                ctx.session.message = {chat_id: msg.chat.id, message_id: msg.message_id}
+            }
+        } catch (error) {}
+
+        if (mediaLength && mediaLength >= mediaLimit) {
+            reached = true;
+            ctx.session.message = undefined
+        }
     })
 
-    // TODO: Create form from ctx.session.formData
+    
+
+    if (reached) {
+        // TODO: Form preview
+
+        const msg = await ctx.reply("Создать анкету?", {reply_markup: formProceedKb})
+        ctx.session.state = State.confirmCreateForm
+        ctx.session.message = {chat_id: msg.chat.id, message_id: msg.message_id}
+    }
+})
+
+router.callbackQuery("stopForm", async (ctx, next) => {
+    await ctx.deleteMessage()
+
+    if (ctx.session.state != State.media) {
+        return;
+    }
+
+    const msg = await ctx.reply("Создать анкету?", {reply_markup: formProceedKb})
+    ctx.session.state = State.confirmCreateForm
+    ctx.session.message = {chat_id: msg.chat.id, message_id: msg.message_id}
 })
 
 export default router

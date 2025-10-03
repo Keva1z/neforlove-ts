@@ -2,6 +2,7 @@ import db from "@/db"
 import {default as User, NewUser, searchSettings, statistics, referral, verification} from "@/db/schema/user"
 import { generateReferralCode } from "@/utils/generate"
 import { eq } from "drizzle-orm"
+import { Form, Location } from "../schema"
 
 export async function createUser(data: NewUser, phrase: string) {
     try {
@@ -33,5 +34,29 @@ export async function createUser(data: NewUser, phrase: string) {
         })
     } catch (error) {
         console.error("Ошибка при создании пользователя и связанных записей:", error);
+    }
+}
+
+export async function createForm(formData: typeof Form.$inferInsert,
+                                 locationData: typeof Location.$inferInsert): Promise<boolean>
+{
+    try {
+        await db.transaction(async (tx) => {
+            let [location] = await tx.insert(Location).values(locationData).onConflictDoNothing().returning()
+
+            if (!location) return false;
+            formData.locationId = location.id
+
+            let [form] = await tx.insert(Form).values(formData).onConflictDoNothing().returning()
+
+            if (!form) {
+                console.log(`Анкета пользователя ${formData.userid} не была создана.`)
+                return false;
+            }
+        })
+        return true;
+    } catch (error) {
+        console.error("Ошибка при создании анкеты:", error)
+        return false;
     }
 }

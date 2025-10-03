@@ -10,8 +10,10 @@ import {default as ageRouter} from "./age"
 import {default as aboutRouter} from "./about"
 import {default as locationRouter} from "./location"
 import {default as mediaRouter} from "./media"
+import {default as previewRouter} from "./preview"
 
 export const formCreateKb = new InlineKeyboard().text("📝 Создать анкету", "CreateForm")
+export const formNotVerifiedKb = new InlineKeyboard().text("❗️ Анкета на верификации ❗️", "...")
 
 // Verified middleware
 router.use(async (ctx, next) => {
@@ -38,7 +40,8 @@ router.use(
     ageRouter,
     aboutRouter,
     locationRouter,
-    mediaRouter
+    mediaRouter,
+    previewRouter
 )
 
 export { router }

@@ -12,7 +12,7 @@ import { getUserByUserId } from "@/db/methods/get"
 import { updateInactive } from "@/db/methods/update"
 import { menuKb } from "./menu";
 
-import { formCreateKb } from "@/bot/routers/user/form"
+import { formCreateKb, formNotVerifiedKb } from "@/bot/routers/user/form"
 
 
 
@@ -29,9 +29,24 @@ const policyKeyboard = new InlineKeyboard()
 const menuPhoto = new InputFile("assets/NeforLove.png", "Menu")
 
 router.command("start", async (ctx) => {
-    ctx.session.state = undefined
-
     const result = await getUserByUserId(ctx.from!.id)
+
+    // Delete action messages
+    if (ctx.session.message) {
+        try {
+            await ctx.api.deleteMessage(
+                ctx.session.message.chat_id,
+                ctx.session.message.message_id
+            )
+        } catch (error) {};
+
+        switch (ctx.session.state) {
+            case State.media || State.confirmCreateForm:
+                await ctx.reply("Создание анкеты отменено!")
+        }
+    }
+
+    ctx.session.state = undefined
 
     // Set as active
     if (result?.inactive) { await updateInactive(ctx.from!.id, false) }
@@ -41,8 +56,10 @@ router.command("start", async (ctx) => {
         
         let kb = menuKb
 
-        if (!result?.form) {
+        if (!result.form) { // Not created form
             kb = formCreateKb.clone().append(kb.inline_keyboard)
+        } else if (!result.form.status) { // Created but not verified
+            kb = formNotVerifiedKb.clone().append(kb.inline_keyboard)
         }
         
         await ctx.replyWithPhoto(menuPhoto, {reply_markup: kb})
@@ -98,6 +115,11 @@ async function sendRegistration(ctx: CallbackQueryContext<BaseContext>, next: ()
 
     ctx.session.state = State.waitingVideoNote
 }
+
+// Silence empty data
+router.callbackQuery("...", async (ctx) => {
+    await ctx.answerCallbackQuery()
+})
 
 // TODO: Create route on "Forms-Noreg" callback
 

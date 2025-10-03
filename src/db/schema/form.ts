@@ -6,6 +6,7 @@ import { pgTable,
     boolean,
     integer,
     geometry,
+    real,
 } from "drizzle-orm/pg-core"; 
 import { relations, sql } from "drizzle-orm";
 
@@ -33,7 +34,7 @@ const Form = pgTable("Forms", {
                  .references(() => Location.id),
 
     // Form meta
-    searchId: integer().notNull().unique(),
+    searchId: integer().notNull(),
     status: boolean().default(false).notNull(),
     verifiedAt: timestamp({mode: "string", withTimezone: true}),
     
@@ -51,8 +52,8 @@ const Location = pgTable("locations", {
     country: varchar({length: 128}).notNull(),
     state: varchar({length: 128}).notNull(),
     city: varchar({length: 128}),
-    latitude: integer().notNull(),
-    longitude: integer().notNull(),
+    latitude: real().notNull(),
+    longitude: real().notNull(),
 
     location: geometry({type: "point", mode: "xy", srid: 4326}).notNull()
 })
