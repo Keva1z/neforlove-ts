@@ -1,4 +1,3 @@
-import type {} from "@grammyjs/parse-mode";
 import { Context, SessionFlavor } from "grammy";
 import { Message } from "grammy/types";
 

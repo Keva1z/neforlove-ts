@@ -16,20 +16,20 @@ export const formCreateKb = new InlineKeyboard().text("📝 Создать ан�
 export const formNotVerifiedKb = new InlineKeyboard().text("❗️ Анкета на верификации ❗️", "...");
 
 // Verified middleware
-router.use(async (ctx, next) => {
-  if (!ctx.from) {
-    return;
-  }
-  if (await isVerified(ctx.from.id)) {
-    return next();
-  }
+// router.use(async (ctx, next) => {
+//   if (!ctx.from) {
+//     return;
+//   }
+//   if (await isVerified(ctx.from.id)) {
+//     return next();
+//   }
 
-  try {
-    await ctx.answerCallbackQuery("Вы не верифицированны!");
-  } catch {}
+//   try {
+//     await ctx.answerCallbackQuery("Вы не верифицированны!");
+//   } catch {}
 
-  return;
-});
+//   return;
+// });
 
 router.callbackQuery("CreateForm", async (ctx, next) => {
   if (ctx.session.state) return next();

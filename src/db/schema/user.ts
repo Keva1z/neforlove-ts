@@ -1,8 +1,9 @@
-import { pgTable, bigint, serial, varchar, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, bigint, serial, varchar, boolean, integer, PgDate } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 import { sexEnum, roleEnum, subscriptionEnum } from "./enums";
 import { Form, Location } from "./form";
+import { createTimestamp } from "@/utils/datetime";
 
 const user = pgTable("users", {
   id: serial().primaryKey(),
@@ -16,13 +17,13 @@ const user = pgTable("users", {
 
   // Subscription fields
   subscription: subscriptionEnum().default("Free").notNull(),
-  subscriptionEnd: timestamp({ mode: "string", withTimezone: true }),
+  subscriptionEnd: varchar({ length: 128 }),
 
   // Ban fields
   banned: boolean().default(false).notNull(),
   banMessage: varchar({ length: 128 }),
 
-  createdAt: timestamp({ mode: "string", withTimezone: true }).defaultNow(),
+  createdAt: varchar({ length: 128 }).default(createTimestamp()),
 
   // Inactive on bot-block
   inactive: boolean().default(false).notNull(),
@@ -33,7 +34,7 @@ const verification = pgTable("verifications", {
     .notNull()
     .unique()
     .references(() => user.userid),
-  verifiedAt: timestamp({ mode: "string", withTimezone: true }),
+  verifiedAt: varchar({ length: 128 }),
   videonote: varchar({ length: 256 }),
   phrase: varchar({ length: 32 }).notNull(),
   verifiedById: bigint({ mode: "number" })

@@ -3,8 +3,18 @@ import { Composer, InlineKeyboard } from "grammy";
 import { BaseContext, State, FormData, emptyFormData } from "@/utils/fsm";
 import { createForm } from "@/db/methods/create";
 import { Form, Location } from "@/db/schema";
+import { previewMediaForm } from "@/utils/mediaform";
+import env from "@/env";
+import { getUserByUserId } from "@/db/methods/get";
+import { mentionUser, fmt } from "@grammyjs/parse-mode";
+
+import { parseTimestamp } from "@/utils/datetime";
 
 const router = new Composer<BaseContext>();
+
+const formVerifyKb = new InlineKeyboard()
+  .text("✅ Одобрить", "ApproveVerifyForm")
+  .text("❌ Отклонить", "DeclineVerifyForm");
 
 async function proceedFormCreation(userid: number, data: FormData) {
   let formData: typeof Form.$inferInsert = {
@@ -51,6 +61,26 @@ router.callbackQuery("proceed_form", async (ctx, next) => {
     const created = await proceedFormCreation(ctx.from.id, data);
     const message = ctx.session.message;
     if (created) {
+      // Create & Send form to chat
+      const mediaGroup = previewMediaForm(ctx.session.formData);
+      const user = await getUserByUserId(ctx.from.id);
+      if (mediaGroup === null || !user) {
+        await ctx.reply("Что-то пошло не так, пересоздайте анкету!");
+        ctx.session.state = undefined;
+        ctx.session.message = undefined;
+        ctx.session.formData = emptyFormData();
+        return;
+      }
+
+      const link = mentionUser(ctx.from.first_name, ctx.from.id);
+
+      const text = fmt`>> ${link}
+🆔 ID: ${ctx.from.id}
+✅ Верифицирован: ${parseTimestamp(user.verification.verifiedAt!)}`;
+      await ctx.api.sendMediaGroup(env.FORMS_CHAT, mediaGroup);
+      await ctx.api.sendVideoNote(env.FORMS_CHAT, user.verification.videonote!);
+      await ctx.api.sendMessage(env.FORMS_CHAT, text.text, { entities: text.entities, reply_markup: formVerifyKb });
+
       if (message)
         try {
           await ctx.editMessageText(

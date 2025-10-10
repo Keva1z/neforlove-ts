@@ -1,0 +1,3 @@
+ALTER TABLE "Forms" ALTER COLUMN "createdAt" SET DEFAULT '2025-10-11T00:38:22.031+03:00';--> statement-breakpoint
+ALTER TABLE "locations" ALTER COLUMN "createdAt" SET DEFAULT '2025-10-11T00:38:22.031+03:00';--> statement-breakpoint
+ALTER TABLE "users" ALTER COLUMN "createdAt" SET DEFAULT '2025-10-11T00:38:22.022+03:00';

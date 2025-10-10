@@ -29,7 +29,7 @@ bot.on("my_chat_member", async (ctx, next) => {
   return next();
 });
 
-bot.use(ownerRoute.router, moderatorRoute.router, userRoute.router);
+bot.use(userRoute.router, moderatorRoute.router, ownerRoute.router);
 
 run(bot);
 

@@ -1,8 +1,9 @@
-import { pgTable, bigint, serial, varchar, timestamp, boolean, integer, geometry, real } from "drizzle-orm/pg-core";
+import { pgTable, bigint, serial, varchar, boolean, integer, geometry, real } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
 import { sexEnum } from "./enums";
 import user from "./user";
+import { createTimestamp } from "@/utils/datetime";
 
 const Form = pgTable("Forms", {
   id: serial().primaryKey(),
@@ -28,8 +29,8 @@ const Form = pgTable("Forms", {
   searchId: integer().notNull(),
   status: boolean().default(false).notNull(),
 
-  createdAt: timestamp({ mode: "string", withTimezone: true }).defaultNow(),
-  verifiedAt: timestamp({ mode: "string", withTimezone: true }),
+  createdAt: varchar({ length: 128 }).default(createTimestamp()),
+  verifiedAt: varchar({ length: 128 }),
 
   // Inactive
   inactive: boolean().default(false).notNull(),
@@ -40,7 +41,7 @@ const Location = pgTable("locations", {
   userid: bigint({ mode: "number" })
     .notNull()
     .references(() => user.userid),
-  createdAt: timestamp({ mode: "string", withTimezone: true }).defaultNow(),
+  createdAt: varchar({ length: 128 }).default(createTimestamp()),
 
   country: varchar({ length: 128 }).notNull(),
   state: varchar({ length: 128 }).notNull(),

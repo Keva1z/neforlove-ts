@@ -13,6 +13,7 @@ const stringBoolean = z.coerce
 const EnvSchema = z.object({
   TOKEN: z.string(),
   VIDEONOTE_CHAT: z.coerce.number(),
+  FORMS_CHAT: z.coerce.number(),
   GEOAPIFY_KEY: z.string(),
   DB_HOST: z.string(),
   DB_USER: z.string(),

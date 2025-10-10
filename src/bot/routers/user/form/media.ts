@@ -1,8 +1,9 @@
 import { Composer, InlineKeyboard } from "grammy";
 
-import { BaseContext, State } from "@/utils/fsm";
+import { BaseContext, emptyFormData, State } from "@/utils/fsm";
 import { getSubscriptionByUserId } from "@/db/methods/get";
 import { Mutex } from "async-mutex";
+import { previewMediaForm } from "@/utils/mediaform";
 
 // Locking media handlers, to handle media in send order
 const locks = new Map<number, Mutex>();
@@ -76,6 +77,15 @@ router.on(":media", async (ctx, next) => {
 
   if (reached) {
     // TODO: Form preview
+    const mediaGroup = previewMediaForm(ctx.session.formData);
+    if (mediaGroup === null) {
+      await ctx.reply("Что-то пошло не так, пересоздайте анкету!");
+      ctx.session.state = undefined;
+      ctx.session.formData = emptyFormData();
+      return;
+    }
+
+    await ctx.replyWithMediaGroup(mediaGroup);
 
     const msg = await ctx.reply("Создать анкету?", { reply_markup: formProceedKb });
     ctx.session.state = State.confirmCreateForm;
@@ -89,6 +99,17 @@ router.callbackQuery("stopForm", async (ctx, next) => {
   if (ctx.session.state != State.media) {
     return;
   }
+
+  const mediaGroup = previewMediaForm(ctx.session.formData);
+  if (mediaGroup === null) {
+    await ctx.reply("Что-то пошло не так, пересоздайте анкету!");
+    ctx.session.state = undefined;
+    ctx.session.message = undefined;
+    ctx.session.formData = emptyFormData();
+    return;
+  }
+
+  await ctx.replyWithMediaGroup(mediaGroup);
 
   const msg = await ctx.reply("Создать анкету?", { reply_markup: formProceedKb });
   ctx.session.state = State.confirmCreateForm;

@@ -1,8 +1,7 @@
 import db from "@/db";
 import { default as User, NewUser, searchSettings, statistics, referral, verification } from "@/db/schema/user";
 import { eq, sql } from "drizzle-orm";
-
-import { DateTime } from "luxon";
+import { createTimestamp } from "@/utils/datetime";
 
 export async function updateVideonote(userid: number, videonote: typeof verification.$inferSelect.videonote) {
   await db.update(verification).set({ videonote }).where(eq(verification.userid, userid));
@@ -20,10 +19,9 @@ export async function updateVerifiedBy(
   gender: typeof User.$inferSelect.sex,
   verifiedById: typeof verification.$inferSelect.verifiedById,
 ) {
-  const timestamp = DateTime.now().setZone("Europe/Moscow");
   await db
     .update(verification)
-    .set({ verifiedById, verifiedAt: verifiedById ? timestamp.toSQL({ includeOffset: true }) : null })
+    .set({ verifiedById, verifiedAt: verifiedById ? createTimestamp() : null })
     .where(eq(verification.userid, userid));
   await db.update(User).set({ sex: gender, verified: verifiedById ? true : false });
 }
