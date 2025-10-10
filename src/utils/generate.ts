@@ -1,4 +1,3 @@
-
 // function to choice random array element
 function choice<T>(arr: T[]): T | undefined {
   if (arr.length === 0) {
@@ -15,15 +14,13 @@ function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const phrases = [
-    "NeforLove"
-]
+const phrases = ["NeforLove"];
 
 export function generate_phrase(): string {
-    const phrase = choice(phrases);
-    const num = getRandomInt(10000, 99999);
+  const phrase = choice(phrases);
+  const num = getRandomInt(10000, 99999);
 
-    return `${phrase} ${num}`
+  return `${phrase} ${num}`;
 }
 
 export const generateReferralCode = () => {

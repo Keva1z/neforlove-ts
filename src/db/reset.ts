@@ -1,10 +1,10 @@
-import { sql } from 'drizzle-orm';
-import db from '@/db'; // Путь к твоей конфигурации Drizzle
+import { sql } from "drizzle-orm";
+import db from "@/db"; // Путь к твоей конфигурации Drizzle
 
 async function resetDatabase(): Promise<void> {
   try {
     // Отключение ограничений внешних ключей
-    await db.execute(sql.raw('SET session_replication_role = replica;'));
+    await db.execute(sql.raw("SET session_replication_role = replica;"));
 
     // Получение списка всех таблиц в публичной схеме
     const tablesResult = await db.execute(sql`
@@ -22,15 +22,15 @@ async function resetDatabase(): Promise<void> {
     }
 
     // Удаление схемы drizzle и таблицы __drizzle_migrations
-    await db.execute(sql.raw('DROP SCHEMA IF EXISTS drizzle CASCADE;'));
+    await db.execute(sql.raw("DROP SCHEMA IF EXISTS drizzle CASCADE;"));
     console.log('Схема "drizzle" и таблица "__drizzle_migrations" удалены.');
 
     // Включение ограничений внешних ключей
-    await db.execute(sql.raw('SET session_replication_role = DEFAULT;'));
+    await db.execute(sql.raw("SET session_replication_role = DEFAULT;"));
 
-    console.log('База данных успешно очищена.');
+    console.log("База данных успешно очищена.");
   } catch (error) {
-    console.error('Ошибка при очистке базы данных:', error);
+    console.error("Ошибка при очистке базы данных:", error);
   }
 }
 

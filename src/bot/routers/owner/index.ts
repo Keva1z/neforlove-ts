@@ -1,22 +1,28 @@
 import { Composer } from "grammy";
 
-import { BaseContext, State } from "@/utils/fsm"
+import { BaseContext, State } from "@/utils/fsm";
 import { isRole } from "@/bot/filters/roleFilter";
 
-import * as tests from './test';
+import * as tests from "./test";
 
 const router = new Composer<BaseContext>();
 
 // Role middleware
 router.use(async (ctx, next) => {
-    if (!ctx.from) { return; }
-    if (await isRole(ctx.from.id, ["Owner"])) { return next() }
-
-    try { await ctx.answerCallbackQuery() } catch {}
-
+  if (!ctx.from) {
     return;
+  }
+  if (await isRole(ctx.from.id, ["Owner"])) {
+    return next();
+  }
+
+  try {
+    await ctx.answerCallbackQuery();
+  } catch {}
+
+  return;
 });
 
-router.use(tests.router)
+router.use(tests.router);
 
-export { router }
+export { router };
