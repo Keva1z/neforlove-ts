@@ -22,7 +22,7 @@ const policyKeyboard = new InlineKeyboard().text("Согласен", "Reg_agree"
 
 const menuPhoto = new InputFile("assets/NeforLove.png", "Menu");
 
-router.command("start", async (ctx) => {
+async function startCommand(ctx: BaseContext) {
   const result = await getUserByUserId(ctx.from!.id);
 
   // Delete action messages
@@ -74,7 +74,30 @@ router.command("start", async (ctx) => {
     return;
   }
 
-  await ctx.reply(Texts.START, { parse_mode: "MarkdownV2", reply_markup: startKeyboard });
+  return ctx.reply(Texts.START, { parse_mode: "MarkdownV2", reply_markup: startKeyboard });
+}
+
+router.command("start", (ctx) => startCommand(ctx));
+router.callbackQuery("openStartMenu", async (ctx) => {
+  const result = await getUserByUserId(ctx.from!.id);
+
+  // Menu
+  if (result?.verified) {
+    let kb = menuKb;
+
+    if (!result.form) {
+      // Not created form
+      kb = formCreateKb.clone().append(kb.inline_keyboard);
+    } else if (!result.form.status) {
+      // Created but not verified
+      kb = formNotVerifiedKb.clone().append(kb.inline_keyboard);
+    }
+
+    await ctx.editMessageReplyMarkup({ reply_markup: kb });
+    return;
+  }
+
+  await ctx.deleteMessage();
 });
 
 // Policy before videonote

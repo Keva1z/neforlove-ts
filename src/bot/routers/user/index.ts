@@ -6,11 +6,12 @@ import { isRole } from "@/bot/filters/roleFilter";
 import * as start from "./start";
 import * as registration from "./registration";
 import * as form from "./form";
+import * as menu from "./menu";
 
 const router = new Composer();
 
 // Dont need role middleware
 
-router.use(start.router, registration.router, form.router);
+router.use(start.router, registration.router, form.router, menu.router);
 
 export { router };

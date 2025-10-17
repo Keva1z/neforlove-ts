@@ -21,3 +21,5 @@ export const menuKb = new InlineKeyboard()
 
 // All menu routers
 router.use(settingsRouter, shopRouter, profileRouter, matchRouter, searchRouter);
+
+export { router };
