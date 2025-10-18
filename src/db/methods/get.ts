@@ -15,6 +15,18 @@ export async function getUserByUserId(userid: number) {
   return result;
 }
 
+export async function getStatisticsByUserId(userid: number) {
+  const result = await db.query.statistics
+    .findFirst({
+      where: eq(User.userid, userid),
+    })
+    .catch(() => {
+      return undefined;
+    });
+
+  return result;
+}
+
 export async function getRoleByUserId(userid: number) {
   const result = await db.query.user
     .findFirst({
