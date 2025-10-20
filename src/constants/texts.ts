@@ -1,3 +1,5 @@
+import { fmt, b, FormattedString, link, i } from "@grammyjs/parse-mode";
+
 export const Texts = {
   START: `\\>\\>\\> *Добро пожаловать в NeforLove\\!* <<<
 
@@ -28,4 +30,23 @@ export const Texts = {
 \\> [Правила администрации](https://telegra.ph/Pravila\\-administracii\\-09\\-22)
 
 Согласны ли в с пользовательским соглашением и правилами?`,
+
+  FORM_DECLINED: (modLink: FormattedString) => fmt`${b}❌ ОТКЛОНЕНО ❌${b}
+Ваша анкета была отклонена!
+Перепроверьте ${link("https://telegra.ph/Pravila-polzovaniya-09-22")}правила${link} или обратитесь к администрации!
+
+${b}Модератор:${b} ${i}${modLink}${i}`,
+
+  FORM_DELETED: (modLink: FormattedString) => fmt`${b}❌ ОТКЛОНЕНО ❌${b}
+Ваша анкета была отклонена и удалена верификация!
+${b}Частая причина:${b} ${i}Не неформал.${i}
+
+Перепроверьте ${link("https://telegra.ph/Pravila-polzovaniya-09-22")}правила${link} или обратитесь к администрации!
+
+${b}Модератор:${b} ${i}${modLink}${i}`,
+
+  FORM_ACCEPTED: fmt`${b}✅ ОДОБРЕНО ✅${b}
+Ваша анкета была одобрена!
+
+Теперь вам доступен ${b}полный${b} функционал просмотра анкет!`,
 };

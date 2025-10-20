@@ -15,6 +15,18 @@ export async function getUserByUserId(userid: number) {
   return result;
 }
 
+export async function getUserInactive(userid: number) {
+  const [result] = await db
+    .select({ inactive: User.inactive })
+    .from(User)
+    .where(eq(User.userid, userid))
+    .catch(() => {
+      return [undefined];
+    });
+
+  return result ? result.inactive : result;
+}
+
 export async function getStatisticsByUserId(userid: number) {
   const result = await db.query.statistics
     .findFirst({

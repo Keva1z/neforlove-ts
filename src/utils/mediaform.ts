@@ -13,7 +13,7 @@ function addStatistics(
   verifiedAt: string,
   link: FormattedString,
 ) {
-  return fmt`${caption}\n\n${b}=== ${link} ===${b}\n❤️ ${stats.likesOut} | 💔 ${stats.dislikesOut}\n✅ ${verifiedAt}`;
+  return fmt`${caption}\n\n${b}===== ${link} =====${b}\n❤️ ${stats.likesOut} | 💔 ${stats.dislikesOut}\n✅ ${verifiedAt}`;
 }
 
 function createCaption(data: FormData) {

@@ -4,6 +4,7 @@ import { BaseContext, State } from "@/utils/fsm";
 import { isRole } from "@/bot/filters/roleFilter";
 
 import * as videonote from "./verification/videonote";
+import * as forms from "./verification/forms";
 
 const router = new Composer<BaseContext>();
 
@@ -23,6 +24,6 @@ router.use(async (ctx, next) => {
   return;
 });
 
-router.use(videonote.router);
+router.use(videonote.router, forms.router);
 
 export { router };

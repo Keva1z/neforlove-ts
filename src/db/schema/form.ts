@@ -31,6 +31,9 @@ const Form = pgTable("Forms", {
 
   createdAt: varchar({ length: 128 }).default(createTimestamp()),
   verifiedAt: varchar({ length: 128 }),
+  verifiedById: bigint({ mode: "number" })
+    .unique()
+    .references(() => user.userid),
 
   // Inactive
   inactive: boolean().default(false).notNull(),
@@ -57,6 +60,11 @@ export const formRelations = relations(Form, ({ one }) => ({
     fields: [Form.userid],
     references: [user.userid],
     relationName: "user",
+  }),
+  moderator: one(user, {
+    fields: [Form.verifiedById],
+    references: [user.userid],
+    relationName: "moderator",
   }),
   location: one(Location, {
     fields: [Form.locationId],

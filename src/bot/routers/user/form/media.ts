@@ -76,7 +76,6 @@ router.on(":media", async (ctx, next) => {
   });
 
   if (reached) {
-    // TODO: Form preview
     const mediaGroup = previewMediaForm(ctx.session.formData);
     if (mediaGroup === null) {
       await ctx.reply("Что-то пошло не так, пересоздайте анкету!");

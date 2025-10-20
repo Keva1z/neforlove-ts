@@ -12,9 +12,12 @@ import { parseTimestamp } from "@/utils/datetime";
 
 const router = new Composer<BaseContext>();
 
-const formVerifyKb = new InlineKeyboard()
-  .text("✅ Одобрить", "ApproveVerifyForm")
-  .text("❌ Отклонить", "DeclineVerifyForm");
+const formVerifyKb = (userid: number) =>
+  new InlineKeyboard()
+    .text("✅ Одобрить", `ApproveVerifyForm:${userid}`)
+    .text("❌ Отклонить", `DeclineVerifyForm:${userid}`)
+    .row()
+    .text("☣️ Удалить ☣️", `DeleteVerifyForm:${userid}`);
 
 async function proceedFormCreation(userid: number, data: FormData) {
   let formData: typeof Form.$inferInsert = {
@@ -85,7 +88,9 @@ router.callbackQuery("proceed_form", async (ctx, next) => {
       }
 
       await ctx.api.sendMediaGroup(env.FORMS_CHAT, mediaGroup);
-      await ctx.api.sendVideoNote(env.FORMS_CHAT, user.verification.videonote!, { reply_markup: formVerifyKb });
+      await ctx.api.sendVideoNote(env.FORMS_CHAT, user.verification.videonote!, {
+        reply_markup: formVerifyKb(ctx.from.id),
+      });
 
       if (message)
         try {
