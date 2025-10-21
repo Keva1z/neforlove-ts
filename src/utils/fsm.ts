@@ -18,7 +18,7 @@ export enum State {
 export interface LocationData {
   country: string;
   state: string;
-  city: string | undefined;
+  city: string | undefined | null;
   lat: number;
   lon: number;
 }

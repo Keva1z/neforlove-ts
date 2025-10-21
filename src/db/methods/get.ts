@@ -1,6 +1,7 @@
 import db from "@/db";
-import { eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { default as User, NewUser, searchSettings, statistics, referral, verification } from "@/db/schema/user";
+import { Location } from "@/db/schema/form";
 
 export async function getUserByUserId(userid: number) {
   const result = await db.query.user
@@ -12,6 +13,16 @@ export async function getUserByUserId(userid: number) {
       return undefined;
     });
 
+  return result;
+}
+
+export async function getUserLocations(userid: number) {
+  const result = await db.query.Location.findMany({
+    where: eq(Location.userid, userid),
+    orderBy: desc(Location.id),
+  }).catch(() => {
+    return undefined;
+  });
   return result;
 }
 

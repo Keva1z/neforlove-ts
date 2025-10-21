@@ -1,4 +1,4 @@
-import { Composer, InputFile, InlineKeyboard, CallbackQueryContext } from "grammy";
+import { Composer, InputFile, InlineKeyboard, CallbackQueryContext, InputMediaBuilder } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm";
 import { generate_phrase } from "@/utils/generate";
@@ -78,8 +78,22 @@ async function startCommand(ctx: BaseContext) {
 }
 
 router.command("start", (ctx) => startCommand(ctx));
-router.callbackQuery("openStartMenu", async (ctx) => {
+router.callbackQuery(/openStartMenu:(.+)$/, async (ctx) => {
+  await ctx.answerCallbackQuery();
   const result = await getUserByUserId(ctx.from!.id);
+  const data = ctx.match[0].split(":");
+
+  ctx.session.message = undefined;
+
+  const messageDeleteCount = parseInt(data[data.length - 1]);
+  const msgId = ctx.callbackQuery.message!.message_id;
+  let toDelete: number[] = [];
+
+  if (messageDeleteCount > 0) {
+    for (let i = msgId - 1; i > msgId - messageDeleteCount - 1; i--) {
+      toDelete.push(i);
+    }
+  }
 
   // Menu
   if (result?.verified) {
@@ -93,7 +107,12 @@ router.callbackQuery("openStartMenu", async (ctx) => {
       kb = formNotVerifiedKb.clone().append(kb.inline_keyboard);
     }
 
-    await ctx.editMessageReplyMarkup({ reply_markup: kb });
+    try {
+      await ctx.editMessageMedia(InputMediaBuilder.photo(menuPhoto), { reply_markup: kb });
+      if (toDelete.length > 0) ctx.deleteMessages(toDelete);
+    } catch (error) {
+      await ctx.deleteMessage();
+    }
     return;
   }
 
