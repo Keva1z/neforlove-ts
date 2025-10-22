@@ -20,6 +20,13 @@ export const settingsKb = new InlineKeyboard()
   .row()
   .text("⬅️ Назад", "openStartMenu:0");
 
+const genderKb = new InlineKeyboard()
+  .text("Парней", "gender_select:Male")
+  .row()
+  .text("Девушек", "gender_select:Female")
+  .row()
+  .text("Не важно", "gender_select:Unknown");
+
 router.callbackQuery("settings", async (ctx, next) => {
   if (ctx.session.state !== undefined) return next();
 
@@ -31,7 +38,7 @@ router.callbackQuery("settings", async (ctx, next) => {
   }
 
   const searchCity = searchSettings.city ? searchSettings.city : "Не указан";
-  const text = fmt`🚹 ${b}Пол:${b} ${i}${sexEnum[searchSettings.searchSex][1]}${i}
+  const text = fmt`🚹 ${b}Искать:${b} ${i}${sexEnum[searchSettings.searchSex][1]}${i}
 👦 ${b}Диапазон:${b} ${i}${searchSettings.ageFrom}-${searchSettings.ageTo}${i}
 🏙 ${b}Город:${b} ${i}${searchCity}${i}`;
 
@@ -69,6 +76,23 @@ router.callbackQuery("change_search:age", async (ctx, next) => {
   await ctx.reply("Отправьте возраст от которого будет идти поиск.\n(Минимальный: 16)");
 
   ctx.session.message = undefined;
+});
+
+router.callbackQuery("change_search:gender", async (ctx, next) => {
+  if (ctx.session.state !== undefined) return next();
+
+  const user = await getUserByUserId(ctx.from.id);
+  if (!user || user.inactive) {
+    await ctx.answerCallbackQuery("Вы не можете менять настройки!");
+    return;
+  }
+
+  ctx.session.state = State.settings_gender;
+  await ctx.deleteMessage();
+
+  const msg = await ctx.reply("Выберите, кого вы хотите искать.", { reply_markup: genderKb });
+
+  ctx.session.message = { chat_id: ctx.chat!.id, message_id: msg.message_id };
 });
 
 export default router;

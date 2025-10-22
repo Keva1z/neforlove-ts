@@ -2,7 +2,7 @@ import db from "@/db";
 import { default as User, NewUser, searchSettings, statistics, referral, verification } from "@/db/schema/user";
 import { eq, sql } from "drizzle-orm";
 import { createTimestamp } from "@/utils/datetime";
-import { Form } from "../schema";
+import { Form, sexEnum } from "../schema";
 
 export async function updateVideonote(userid: number, videonote: typeof verification.$inferSelect.videonote) {
   await db.update(verification).set({ videonote }).where(eq(verification.userid, userid));
@@ -51,6 +51,14 @@ export async function updateFormStatus(
 export async function updateSearchAge(userid: number, from: number, to: number) {
   try {
     await db.update(searchSettings).set({ ageFrom: from, ageTo: to }).where(eq(searchSettings.userid, userid));
+  } catch (error) {
+    console.error("Ошибка при обновлении возраста:", error);
+  }
+}
+
+export async function updateSearchGender(userid: number, gender: (typeof sexEnum.enumValues)[number]) {
+  try {
+    await db.update(searchSettings).set({ searchSex: gender }).where(eq(searchSettings.userid, userid));
   } catch (error) {
     console.error("Ошибка при обновлении возраста:", error);
   }
