@@ -2,7 +2,7 @@ import { Composer } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm";
 import { settingsKb } from "../settings";
-import { menuPhoto } from "@/constants/assets";
+import { settingsPhoto } from "@/constants/assets";
 import { updateSearchAge } from "@/db/methods/update";
 
 const router = new Composer<BaseContext>();
@@ -36,7 +36,7 @@ router.hears(/^(?:1[01][0-9]|120|[1-9][0-9]?)$/, async (ctx, next) => {
   ctx.session.state = undefined;
   ctx.session.settings.age = { from: undefined, to: undefined };
 
-  await ctx.replyWithPhoto(menuPhoto, { reply_markup: settingsKb });
+  await ctx.replyWithPhoto(settingsPhoto, { reply_markup: settingsKb });
 });
 
 export default router;
