@@ -3,6 +3,7 @@ import { Composer, InputFile, InlineKeyboard, CallbackQueryContext, InputMediaBu
 import { BaseContext, State } from "@/utils/fsm";
 import { generate_phrase } from "@/utils/generate";
 import { Texts } from "@/constants/texts";
+import { menuPhoto } from "@/constants/assets";
 
 import { createUser } from "@/db/methods/create";
 import { getUserByUserId } from "@/db/methods/get";
@@ -19,8 +20,6 @@ const startKeyboard = new InlineKeyboard()
   .text("Смотреть анкеты", "Forms-Noreg");
 
 const policyKeyboard = new InlineKeyboard().text("Согласен", "Reg_agree").text("Не согласен", "Reg_disagree");
-
-const menuPhoto = new InputFile("assets/NeforLove.png", "Menu");
 
 async function startCommand(ctx: BaseContext) {
   const result = await getUserByUserId(ctx.from!.id);

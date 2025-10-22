@@ -13,6 +13,11 @@ export enum State {
   location = "location",
   media = "media",
   confirmCreateForm = "confirm",
+
+  // Settings states
+  settings_age = "settings_age",
+  settings_gender = "settings_gender",
+  settings_city = "settings_city",
 }
 
 export interface LocationData {
@@ -41,6 +46,12 @@ interface SessionData {
         message_id: number;
       }
     | undefined;
+  settings: {
+    age: {
+      from: number | undefined;
+      to: number | undefined;
+    };
+  };
 }
 
 // FSM Context
@@ -58,6 +69,12 @@ export function resetSession(): SessionData {
       media: undefined,
     },
     message: undefined,
+    settings: {
+      age: {
+        from: undefined,
+        to: undefined,
+      },
+    },
   };
 }
 

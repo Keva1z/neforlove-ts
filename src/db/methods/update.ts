@@ -47,3 +47,11 @@ export async function updateFormStatus(
     console.error("Ошибка при обновлении анкеты:", error);
   }
 }
+
+export async function updateSearchAge(userid: number, from: number, to: number) {
+  try {
+    await db.update(searchSettings).set({ ageFrom: from, ageTo: to }).where(eq(searchSettings.userid, userid));
+  } catch (error) {
+    console.error("Ошибка при обновлении возраста:", error);
+  }
+}
