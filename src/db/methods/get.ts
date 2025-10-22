@@ -16,6 +16,17 @@ export async function getUserByUserId(userid: number) {
   return result;
 }
 
+export async function getUserSearchSettings(userid: number) {
+  const result = await db.query.searchSettings
+    .findFirst({
+      where: eq(Location.userid, userid),
+    })
+    .catch(() => {
+      return undefined;
+    });
+  return result;
+}
+
 export async function getUserLocations(userid: number) {
   const result = await db.query.Location.findMany({
     where: eq(Location.userid, userid),
