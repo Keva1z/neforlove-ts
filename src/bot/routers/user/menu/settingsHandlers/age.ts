@@ -36,7 +36,9 @@ router.hears(/^(?:1[01][0-9]|120|[1-9][0-9]?)$/, async (ctx, next) => {
   ctx.session.state = undefined;
   ctx.session.settings.age = { from: undefined, to: undefined };
 
-  await ctx.replyWithPhoto(settingsPhoto, { reply_markup: settingsKb });
+  const msg = await ctx.replyWithPhoto(settingsPhoto, { reply_markup: settingsKb });
+
+  ctx.session.message = { chat_id: ctx.chat.id, message_id: msg.message_id };
 });
 
 export default router;
