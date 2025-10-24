@@ -2,7 +2,7 @@ import { Composer, Context, InlineKeyboard } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm";
 
-import { updateFormStatus, updateVerifiedBy, updateVideonote } from "@/db/methods/update";
+import { updateFormStatus, updateVerifiedBy, updateVideonote, increaseModerator } from "@/db/methods/update";
 import { deleteFormByUserId } from "@/db/methods/delete";
 import { getUserInactive } from "@/db/methods/get";
 import { sexEnum } from "@/db/schema/enums";
@@ -38,6 +38,7 @@ router.callbackQuery(/ApproveVerifyForm:(.+)$/, async (ctx, next) => {
 
   const data = ctx.match[0].split(":");
   const userid = Number(data[1]);
+  await increaseModerator.formCount(ctx.from.id);
 
   const isInactive = await getUserInactive(userid);
   if (isInactive) {
@@ -66,6 +67,7 @@ router.callbackQuery(/DeclineVerifyForm:(.+)$/, async (ctx, next) => {
   const data = ctx.match[0].split(":");
   const userid = Number(data[1]);
   await deleteFormByUserId(userid);
+  await increaseModerator.formCount(ctx.from.id);
 
   const isInactive = await getUserInactive(userid);
   if (isInactive) {
@@ -96,6 +98,8 @@ router.callbackQuery(/DeleteVerifyForm:(.+)$/, async (ctx, next) => {
   await deleteFormByUserId(userid);
   await updateVerifiedBy(userid, "Unknown", null);
   await updateVideonote(userid, null);
+
+  await increaseModerator.formCount(ctx.from.id);
 
   const isInactive = await getUserInactive(userid);
   if (isInactive) {

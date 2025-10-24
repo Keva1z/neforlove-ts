@@ -126,6 +126,27 @@
       "when": 1761304293077,
       "tag": "0017_calm_killraven",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1761317832764,
+      "tag": "0018_nifty_joshua_kane",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1761318562953,
+      "tag": "0019_furry_maginty",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1761318715510,
+      "tag": "0020_modern_chameleon",
+      "breakpoints": true
     }
   ],
   "version": "7"

@@ -40,9 +40,7 @@ const verification = pgTable("verifications", {
   verifiedAt: varchar({ length: 128 }),
   videonote: varchar({ length: 256 }),
   phrase: varchar({ length: 32 }).notNull(),
-  verifiedById: bigint({ mode: "number" })
-    .unique()
-    .references(() => user.userid),
+  verifiedById: bigint({ mode: "number" }).references(() => user.userid),
 });
 
 const referral = pgTable("referrals", {
@@ -51,9 +49,7 @@ const referral = pgTable("referrals", {
     .unique()
     .references(() => user.userid),
   code: varchar({ length: 32 }).notNull().unique(),
-  referrerId: bigint({ mode: "number" })
-    .unique()
-    .references(() => user.userid),
+  referrerId: bigint({ mode: "number" }).references(() => user.userid),
   verified: integer().default(0).notNull(),
   total: integer().default(0).notNull(),
 });

@@ -2,7 +2,12 @@ import { Composer, Context } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm";
 
-import { updateVideonote, updateVerifiedBy, increaseVerifiedCount } from "@/db/methods/update";
+import {
+  updateVideonote,
+  updateVerifiedBy,
+  increaseVerifiedReferralCount,
+  increaseModerator,
+} from "@/db/methods/update";
 import { getReferralByUserId, getUserByUserId } from "@/db/methods/get";
 import { sexEnum } from "@/db/schema/enums";
 import { mentionUser, fmt } from "@grammyjs/parse-mode";
@@ -50,9 +55,10 @@ router.callbackQuery(/verifyVideonote:(.+)$/, async (ctx, next) => {
         break;
       default:
         // Referral verified increase
-        const referral = await getReferralByUserId(ctx.from.id);
+        const referral = await getReferralByUserId(userid);
+        console.log(referral, referral?.referrer, userid);
         if (referral && referral.referrer) {
-          await increaseVerifiedCount(referral.referrer.userid);
+          await increaseVerifiedReferralCount(referral.referrer.userid);
           try {
             await ctx.api.sendMessage(referral.referrer.userid, "Один из ваших рефералов прошел верификацию!");
           } catch (error) {}
@@ -62,6 +68,8 @@ router.callbackQuery(/verifyVideonote:(.+)$/, async (ctx, next) => {
         await updateVerifiedBy(userid, gender, ctx.from.id);
         break;
     }
+
+    await increaseModerator.videonoteCount(ctx.from.id);
 
     if (!ctx.msg!.text) return;
 

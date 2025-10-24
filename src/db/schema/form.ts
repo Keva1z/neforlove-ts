@@ -31,9 +31,7 @@ const Form = pgTable("Forms", {
 
   createdAt: varchar({ length: 128 }).default(createTimestamp()),
   verifiedAt: varchar({ length: 128 }),
-  verifiedById: bigint({ mode: "number" })
-    .unique()
-    .references(() => user.userid),
+  verifiedById: bigint({ mode: "number" }).references(() => user.userid),
 
   // Inactive
   inactive: boolean().default(false).notNull(),

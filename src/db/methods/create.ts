@@ -29,7 +29,10 @@ export async function createUser(data: NewUser, phrase: string, referrerId: numb
 
       await tx.insert(referral).values({ userid: user.userid, code, referrerId }).onConflictDoNothing();
       if (referrerId) {
-        await tx.update(referral).set({ total: sql`${referral.total} + 1` });
+        await tx
+          .update(referral)
+          .set({ total: sql`${referral.total} + 1` })
+          .where(eq(referral.userid, referrerId));
       }
 
       console.log(`Пользователь ${user.userid} создан успешно.`);

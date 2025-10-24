@@ -20,14 +20,20 @@ export async function updateVerifiedBy(
   gender: typeof User.$inferSelect.sex,
   verifiedById: typeof verification.$inferSelect.verifiedById,
 ) {
-  await db
-    .update(verification)
-    .set({ verifiedById, verifiedAt: verifiedById ? createTimestamp() : null })
-    .where(eq(verification.userid, userid));
-  await db
-    .update(User)
-    .set({ sex: gender, verified: verifiedById ? true : false })
-    .where(eq(User.userid, userid));
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(verification)
+        .set({ verifiedById, verifiedAt: verifiedById ? createTimestamp() : null })
+        .where(eq(verification.userid, userid));
+      await tx
+        .update(User)
+        .set({ sex: gender, verified: verifiedById ? true : false })
+        .where(eq(User.userid, userid));
+    });
+  } catch (error) {
+    console.log("Произошла ошибка при верификации: ", error);
+  }
 }
 
 export async function updateFormStatus(
@@ -67,7 +73,7 @@ export async function updateSearchGender(userid: number, gender: (typeof sexEnum
   }
 }
 
-export async function increaseVerifiedCount(userid: number) {
+export async function increaseVerifiedReferralCount(userid: number) {
   try {
     await db
       .update(referral)
@@ -77,3 +83,26 @@ export async function increaseVerifiedCount(userid: number) {
     console.error("Ошибка при увеличении кол-ва верифицированных:", error);
   }
 }
+
+export const increaseModerator = {
+  videonoteCount: async (userid) => {
+    try {
+      await db
+        .update(statistics)
+        .set({ videonotes: sql`${statistics.videonotes} + 1` })
+        .where(eq(statistics.userid, userid));
+    } catch (error) {
+      console.error("Ошибка при увеличении кол-ва верифицированных кружков модератором:", error);
+    }
+  },
+  formCount: async (userid) => {
+    try {
+      await db
+        .update(statistics)
+        .set({ forms: sql`${statistics.forms} + 1` })
+        .where(eq(statistics.userid, userid));
+    } catch (error) {
+      console.error("Ошибка при увеличении кол-ва верифицированных анкет модератором:", error);
+    }
+  },
+};
