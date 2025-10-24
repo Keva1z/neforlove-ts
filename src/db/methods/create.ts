@@ -1,10 +1,10 @@
 import db from "@/db";
 import { default as User, NewUser, searchSettings, statistics, referral, verification } from "@/db/schema/user";
 import { generateReferralCode } from "@/utils/generate";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { Form, Location } from "../schema";
 
-export async function createUser(data: NewUser, phrase: string) {
+export async function createUser(data: NewUser, phrase: string, referrerId: number | undefined) {
   try {
     await db.transaction(async (tx) => {
       let [user] = await tx.insert(User).values(data).onConflictDoNothing().returning();
@@ -27,7 +27,10 @@ export async function createUser(data: NewUser, phrase: string) {
         code = generateReferralCode();
       }
 
-      await tx.insert(referral).values({ userid: user.userid, code }).onConflictDoNothing();
+      await tx.insert(referral).values({ userid: user.userid, code, referrerId }).onConflictDoNothing();
+      if (referrerId) {
+        await tx.update(referral).set({ total: sql`${referral.total} + 1` });
+      }
 
       console.log(`Пользователь ${user.userid} создан успешно.`);
     });

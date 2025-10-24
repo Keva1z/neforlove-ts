@@ -15,6 +15,9 @@ const bot = new Bot<BaseContext>(env.TOKEN);
 bot.use(session({ initial: resetSession }));
 
 bot.use(async (ctx, next) => {
+  // Supress updates not in chat
+  if (ctx.chatId && ctx.chat?.type !== "private" && ![env.FORMS_CHAT, env.VIDEONOTE_CHAT].includes(ctx.chatId)) return;
+
   console.time(`[BOT] Handled update ${ctx.update.update_id} from [${ctx.from?.first_name}](${ctx.from?.id}) in`);
   await next();
   console.timeEnd(`[BOT] Handled update ${ctx.update.update_id} from [${ctx.from?.first_name}](${ctx.from?.id}) in`);

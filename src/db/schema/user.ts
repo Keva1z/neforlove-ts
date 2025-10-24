@@ -9,6 +9,9 @@ const user = pgTable("users", {
   id: serial().primaryKey(),
   userid: bigint({ mode: "number" }).notNull().unique(),
 
+  // Money system
+  balance: integer().notNull().default(0),
+
   sex: sexEnum().default("Unknown").notNull(),
   role: roleEnum().default("User").notNull(),
 

@@ -1,4 +1,5 @@
 import { Composer, InputFile, InlineKeyboard, CallbackQueryContext, InputMediaBuilder } from "grammy";
+import { BotCommandScopeAllPrivateChats } from "grammy/types";
 
 import { BaseContext, State } from "@/utils/fsm";
 import { generate_phrase } from "@/utils/generate";
@@ -6,7 +7,8 @@ import { Texts } from "@/constants/texts";
 import { menuPhoto } from "@/constants/assets";
 
 import { createUser } from "@/db/methods/create";
-import { getUserByUserId } from "@/db/methods/get";
+import { getUserByUserId, getReferralByCode } from "@/db/methods/get";
+import { user as User } from "@/db/schema/user";
 import { updateInactive } from "@/db/methods/update";
 import { menuKb } from "./menu";
 
@@ -21,8 +23,37 @@ const startKeyboard = new InlineKeyboard()
 
 const policyKeyboard = new InlineKeyboard().text("Согласен", "Reg_agree").text("Не согласен", "Reg_disagree");
 
+async function setCommands(ctx: BaseContext, user: typeof User.$inferSelect | undefined) {
+  const commands = [
+    { command: "start", description: "Запустить бота 🤍" },
+    { command: "referral", description: "Реферальная система 🔗" },
+  ];
+
+  if (user && ["Owner", "Senior-Moderator", "Moderator"].includes(user.role)) {
+    commands.push({ command: "admin", description: "Открыть админ панель ⚙️" });
+  }
+
+  await ctx.api.setMyCommands(commands, {
+    scope: { type: "chat", chat_id: ctx.from!.id },
+  });
+}
+
 async function startCommand(ctx: BaseContext) {
   const result = await getUserByUserId(ctx.from!.id);
+  await setCommands(ctx, result);
+
+  const payload = ctx.match;
+  if (!ctx.session.data.get("ReferrerId")) {
+    ctx.session.data.set("ReferrerId", undefined);
+  }
+  if (payload) {
+    console.log(`payload: '${payload}'`, typeof payload);
+    const referrer = await getReferralByCode(payload.toString());
+
+    if (referrer && referrer.userid !== result?.userid) {
+      ctx.session.data.set("ReferrerId", referrer.userid);
+    }
+  }
 
   // Delete action messages
   if (ctx.session.message) {
@@ -156,8 +187,9 @@ async function sendRegistration(ctx: CallbackQueryContext<BaseContext>, next: ()
 
   const phrase = generate_phrase();
   ctx.session.data.set("RegPhrase", phrase);
+  const referrerId: number | undefined = ctx.session.data.get("ReferrerId");
 
-  await createUser({ userid: ctx.from.id }, phrase);
+  await createUser({ userid: ctx.from.id }, phrase, referrerId);
 
   await ctx.reply(Texts.REGISTRATION + phrase, { parse_mode: "MarkdownV2" });
 

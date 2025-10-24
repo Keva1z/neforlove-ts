@@ -24,7 +24,10 @@ export async function updateVerifiedBy(
     .update(verification)
     .set({ verifiedById, verifiedAt: verifiedById ? createTimestamp() : null })
     .where(eq(verification.userid, userid));
-  await db.update(User).set({ sex: gender, verified: verifiedById ? true : false });
+  await db
+    .update(User)
+    .set({ sex: gender, verified: verifiedById ? true : false })
+    .where(eq(User.userid, userid));
 }
 
 export async function updateFormStatus(
@@ -60,6 +63,17 @@ export async function updateSearchGender(userid: number, gender: (typeof sexEnum
   try {
     await db.update(searchSettings).set({ searchSex: gender }).where(eq(searchSettings.userid, userid));
   } catch (error) {
-    console.error("Ошибка при обновлении возраста:", error);
+    console.error("Ошибка при обновлении гендера:", error);
+  }
+}
+
+export async function increaseVerifiedCount(userid: number) {
+  try {
+    await db
+      .update(referral)
+      .set({ verified: sql`${referral.verified} + 1` })
+      .where(eq(referral.userid, userid));
+  } catch (error) {
+    console.error("Ошибка при увеличении кол-ва верифицированных:", error);
   }
 }

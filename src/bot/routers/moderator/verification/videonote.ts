@@ -2,8 +2,8 @@ import { Composer, Context } from "grammy";
 
 import { BaseContext, State } from "@/utils/fsm";
 
-import { updateVideonote, updateVerifiedBy } from "@/db/methods/update";
-import { getUserByUserId } from "@/db/methods/get";
+import { updateVideonote, updateVerifiedBy, increaseVerifiedCount } from "@/db/methods/update";
+import { getReferralByUserId, getUserByUserId } from "@/db/methods/get";
 import { sexEnum } from "@/db/schema/enums";
 import { mentionUser, fmt } from "@grammyjs/parse-mode";
 import { DateTime } from "luxon";
@@ -49,6 +49,15 @@ router.callbackQuery(/verifyVideonote:(.+)$/, async (ctx, next) => {
         replaceText = `💂🏻 Кем: ${ctx.from.username ? `@${ctx.from.username}` : `${ctx.from.first_name}`}\n   #Отклонен`;
         break;
       default:
+        // Referral verified increase
+        const referral = await getReferralByUserId(ctx.from.id);
+        if (referral && referral.referrer) {
+          await increaseVerifiedCount(referral.referrer.userid);
+          try {
+            await ctx.api.sendMessage(referral.referrer.userid, "Один из ваших рефералов прошел верификацию!");
+          } catch (error) {}
+        }
+
         await ctx.api.sendMessage(userid, "Вы были верифицированы!", { reply_markup: formCreateKb });
         await updateVerifiedBy(userid, gender, ctx.from.id);
         break;

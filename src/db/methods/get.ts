@@ -16,6 +16,31 @@ export async function getUserByUserId(userid: number) {
   return result;
 }
 
+export async function getReferralByUserId(userid: number) {
+  const result = await db.query.referral
+    .findFirst({
+      where: eq(referral.userid, userid),
+      with: { referrer: true },
+    })
+    .catch(() => {
+      return undefined;
+    });
+
+  return result;
+}
+
+export async function getReferralByCode(code: string) {
+  const result = await db.query.referral
+    .findFirst({
+      where: eq(referral.code, code),
+    })
+    .catch(() => {
+      return undefined;
+    });
+
+  return result;
+}
+
 export async function getUserSearchSettings(userid: number) {
   const result = await db.query.searchSettings
     .findFirst({
